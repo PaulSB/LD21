@@ -1,0 +1,5 @@
+#Files to ignore:
+
+bin/
+obj/
+lib/
