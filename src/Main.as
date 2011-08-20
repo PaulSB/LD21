@@ -1,7 +1,8 @@
 package 
 {
 	import org.flixel.FlxGame;
-	import states.MenuState;
+	//import states.MenuState;
+	import states.PlayState;
 	
 	// Display properties
 	[SWF(width = "720", height = "480", backgroundColor = "#000000")]
@@ -9,15 +10,15 @@ package
 	[Frame(factoryClass="Preloader")]
 	
 	/**
-	 * Ludum Dare 21 -
-	 * @author Paul S Burgess - 
+	 * Ludum Dare 21 - Escape
+	 * @author Paul S Burgess - 20/8/2011
 	 */	
 	public class Main extends FlxGame
 	{
 		public function Main()
 		{			
 			// Entry - invoke FlxGame constructor
-			super(800, 600, MenuState, 1, 60, 30, true);
+			super(180, 120, PlayState/*MenuState*/, 4, 60, 30, true);
 		}
 	}
 }
