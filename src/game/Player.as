@@ -23,16 +23,27 @@ package game
 		private const E_DIRECTION_UP:int = 2;
 		private const E_DIRECTION_DOWN:int = 3;
 		
+		public var m_spriteWidth:int;
+		public var m_spriteHeight:int;
+		
 		public function Player(xPos:int, yPos:int) 
 		{
 			super(xPos, yPos);
 			
 			loadGraphic(imgPlayer, true, false, 12, 16);
+			m_spriteWidth = width;
+			m_spriteHeight = height;
 			
 			addAnimation("Idle_L", [E_DIRECTION_LEFT * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_R", [E_DIRECTION_RIGHT * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
+			
+			// Adjust collision rect
+			offset.x = 3;
+			offset.y = (height - height / 4);
+			width -= offset.x * 2;
+			height -= offset.y;
 		}
 		
 		override public function update():void 
@@ -65,6 +76,20 @@ package game
 			{
 				velocity.y = 0;
 			}
+			
+			// Clamp position
+			var maxX:int = PlayState.m_currentLevel.m_roomCentreX + PlayState.m_currentLevel.getMaxXForY(centreY);
+			var minX:int = PlayState.m_currentLevel.m_roomCentreX - PlayState.m_currentLevel.getMaxXForY(centreY);
+			var maxY:int = PlayState.m_currentLevel.m_roomCentreY + PlayState.m_currentLevel.getMaxYForX(centreX);
+			var minY:int = PlayState.m_currentLevel.m_roomCentreY - PlayState.m_currentLevel.getMaxYForX(centreX);
+			if (centreX > maxX)
+				x = maxX - (width / 2.0);
+			else if (centreX < minX)
+				x = minX - (width / 2.0);
+			if (centreY > maxY)
+				y = maxY - (height - width / 4.0);
+			else if (centreY < minY)
+				y = minY - (height - width / 4.0);
 			
 			// Animate
 			if (velocity.x > 0)

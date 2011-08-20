@@ -20,6 +20,11 @@ package world
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
 		
+		private var m_roomWidth:Number = 0;
+		private var m_roomHeight:Number = 0;
+		public var m_roomCentreX:Number = 0;
+		public var m_roomCentreY:Number = 0;
+		
 		public function Level() 
 		{
 			super();
@@ -49,50 +54,63 @@ package world
 				x = ROOM_DRAW_X - j * tile.width / 2;
 				y = ROOM_DRAW_Y + j * tile.height / 2;
 			}
+			
+			m_roomWidth = m_tileWidth * ROOM_TILE_SIZE;
+			m_roomHeight = m_tileHeight * ROOM_TILE_SIZE;
+			m_roomCentreX = ROOM_DRAW_X + (m_tileWidth / 2.0);
+			m_roomCentreY = ROOM_DRAW_Y + (m_roomHeight / 2.0);
 		}
 		
 		public function IsInLevelBounds(xPos:Number, yPos:Number):Boolean
 		{
-			var roomWidth:Number = m_tileWidth * ROOM_TILE_SIZE;
-			var roomHeight:Number = m_tileHeight * ROOM_TILE_SIZE;
-			var roomCentreX:Number = ROOM_DRAW_X + (m_tileWidth / 2.0);
-			var roomCentreY:Number = ROOM_DRAW_Y + (roomHeight);
-			
-			var maxXforY:Number;
-			var offsetY:Number;
-			if (yPos < roomCentreY)
-			{
-				offsetY = roomCentreY - yPos;
-			}
-			else
-			{
-				offsetY = yPos - roomCentreY;
-			}
-			maxXforY = (offsetY / (roomHeight)) * (roomWidth);
-			
-			var maxYforX:Number;
-			var offsetX:Number;
-			if (xPos < roomCentreX)
-			{
-				offsetX = roomCentreX - xPos;
-			}
-			else
-			{
-				offsetX = xPos - roomCentreX;
-			}
-			maxYforX = (1 - offsetX / (roomWidth)) * (roomHeight);
+			var maxXforY:Number = getMaxXForY(yPos);
+			var maxYforX:Number = getMaxYForX(xPos);
 			
 			// Result
-			if ((xPos - 4 <= roomCentreX - maxXforY) || (xPos + 4 >= roomCentreX + maxXforY))
+			if ((xPos - 4 <= m_roomCentreX - maxXforY) || (xPos + 4 >= m_roomCentreX + maxXforY))
 			{
 				return false;
 			}
-			else if ((yPos - 4 <= roomCentreY - maxYforX) || (yPos + 4 >= roomCentreY + maxYforX))
+			else if ((yPos - 4 <= m_roomCentreY - maxYforX) || (yPos + 4 >= m_roomCentreY + maxYforX))
 			{
 				return false;
 			}
 			
 			return true;
+		}
+		
+		public function getMaxXForY(yPos:Number):Number
+		{
+			var maxXforY:Number;
+			var offsetY:Number;
+			if (yPos < m_roomCentreY)
+			{
+				offsetY = m_roomCentreY - yPos;
+			}
+			else
+			{
+				offsetY = yPos - m_roomCentreY;
+			}
+			maxXforY = (1 - offsetY / (m_roomHeight / 2.0)) * (m_roomWidth / 2.0);
+			
+			return maxXforY;
+		}
+		
+		public function getMaxYForX(xPos:Number):Number
+		{
+			var maxYforX:Number;
+			var offsetX:Number;
+			if (xPos < m_roomCentreX)
+			{
+				offsetX = m_roomCentreX - xPos;
+			}
+			else
+			{
+				offsetX = xPos - m_roomCentreX;
+			}
+			maxYforX = (1 - offsetX / (m_roomWidth / 2.0)) * (m_roomHeight / 2.0);
+			
+			return maxYforX;
 		}
 	}
 }
