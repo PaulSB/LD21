@@ -41,8 +41,6 @@ package game
 			addAnimation("Idle_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			
-			immovable = true;
-			
 			// Adjust collision rect
 			offset.x = 3;
 			offset.y = (height - height / 4);
