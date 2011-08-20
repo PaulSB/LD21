@@ -1,18 +1,14 @@
 package game 
 {
-	import org.flixel.FlxG;
 	import org.flixel.FlxSprite;
 	
 	/**
 	 * Ludum Dare 21 - Escape
 	 * @author Paul S Burgess - 20/8/2011
 	 */
-	public class Player extends FlxSprite
+	public class Enemy extends FlxSprite
 	{
-		[Embed(source = '../../data/textures/player.png')] private var imgPlayer:Class;
-		
-		private const HORIZONTAL_RUN_SPEED:int = 60;
-		private const VERTICAL_RUN_SPEED:int = 40;
+		[Embed(source = '../../data/textures/enemy.png')] private var imgEnemy:Class;
 		
 		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 1;
 		// Pseudo-enum
@@ -21,11 +17,11 @@ package game
 		private const E_DIRECTION_UP:int = 2;
 		private const E_DIRECTION_DOWN:int = 3;
 		
-		public function Player(xPos:int, yPos:int) 
+		public function Enemy(xPos:int, yPos:int) 
 		{
 			super(xPos, yPos);
 			
-			loadGraphic(imgPlayer, true, false, 12, 16);
+			loadGraphic(imgEnemy, true, false, 12, 16);
 			
 			addAnimation("Idle_L", [E_DIRECTION_LEFT * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_R", [E_DIRECTION_RIGHT * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
@@ -35,32 +31,6 @@ package game
 		
 		override public function update():void 
 		{
-			if (FlxG.keys.pressed("RIGHT"))
-			{
-				velocity.x = HORIZONTAL_RUN_SPEED;
-			}
-			else if (FlxG.keys.pressed("LEFT"))
-			{
-				velocity.x = -HORIZONTAL_RUN_SPEED;
-			}
-			else
-			{
-				velocity.x = 0;
-			}
-			
-			if (FlxG.keys.pressed("DOWN"))
-			{
-				velocity.y = VERTICAL_RUN_SPEED;
-			}
-			else if (FlxG.keys.pressed("UP"))
-			{
-				velocity.y = -VERTICAL_RUN_SPEED;
-			}
-			else
-			{
-				velocity.y = 0;
-			}
-			
 			// Animate
 			if (velocity.x > 0)
 			{

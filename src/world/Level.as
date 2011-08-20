@@ -14,11 +14,16 @@ package world
 		[Embed(source = '../../data/textures/tile_floor.png')] private var imgTileFloor:Class;
 		
 		private const ROOM_TILE_SIZE:int = 9;
-		private const ROOM_DRAW_X:int = FlxG.width / 2 - 9;
-		private const ROOM_DRAW_Y:int = 12;
+		static public const ROOM_DRAW_X:int = FlxG.width / 2 - 9;
+		static public const ROOM_DRAW_Y:int = 12;
+		
+		public var m_tileWidth:int = 0;
+		public var m_tileHeight:int = 0;
 		
 		public function Level() 
 		{
+			super();
+			
 			// Create level
 			var r:Number = (Math.random() * 255.0);
 			var g:Number = (Math.random() * 255.0);
@@ -35,8 +40,10 @@ package world
 					tile.color = roomColour;
 					add(tile);
 					
-					x += tile.width / 2;
-					y += tile.height / 2;
+					m_tileWidth = tile.width;
+					m_tileHeight = tile.height;
+					x += m_tileWidth / 2;
+					y += m_tileHeight / 2;
 				}
 				
 				x = ROOM_DRAW_X - j * tile.width / 2;
