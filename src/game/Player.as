@@ -1,7 +1,9 @@
 package game 
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
+	import states.PlayState;
 	
 	/**
 	 * Ludum Dare 21 - Escape
@@ -35,11 +37,14 @@ package game
 		
 		override public function update():void 
 		{
-			if (FlxG.keys.pressed("RIGHT"))
+			var centreX:Number = getCentreStandingPos().x;
+			var centreY:Number = getCentreStandingPos().y;
+			
+			if (FlxG.keys.pressed("RIGHT") && PlayState.m_currentLevel.IsInLevelBounds(centreX+1, centreY))
 			{
 				velocity.x = HORIZONTAL_RUN_SPEED;
 			}
-			else if (FlxG.keys.pressed("LEFT"))
+			else if (FlxG.keys.pressed("LEFT") && PlayState.m_currentLevel.IsInLevelBounds(centreX-1, centreY))
 			{
 				velocity.x = -HORIZONTAL_RUN_SPEED;
 			}
@@ -48,11 +53,11 @@ package game
 				velocity.x = 0;
 			}
 			
-			if (FlxG.keys.pressed("DOWN"))
+			if (FlxG.keys.pressed("DOWN") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY+1))
 			{
 				velocity.y = VERTICAL_RUN_SPEED;
 			}
-			else if (FlxG.keys.pressed("UP"))
+			else if (FlxG.keys.pressed("UP") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY-1))
 			{
 				velocity.y = -VERTICAL_RUN_SPEED;
 			}
@@ -84,6 +89,12 @@ package game
 			}
 			
 			super.update();
+		}
+		
+		public function getCentreStandingPos():FlxPoint
+		{
+			var ret:FlxPoint = new FlxPoint(x + width / 2.0, y + height - width / 4.0);
+			return ret;
 		}
 	}
 }

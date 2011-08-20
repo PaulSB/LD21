@@ -50,5 +50,49 @@ package world
 				y = ROOM_DRAW_Y + j * tile.height / 2;
 			}
 		}
+		
+		public function IsInLevelBounds(xPos:Number, yPos:Number):Boolean
+		{
+			var roomWidth:Number = m_tileWidth * ROOM_TILE_SIZE;
+			var roomHeight:Number = m_tileHeight * ROOM_TILE_SIZE;
+			var roomCentreX:Number = ROOM_DRAW_X + (m_tileWidth / 2.0);
+			var roomCentreY:Number = ROOM_DRAW_Y + (roomHeight);
+			
+			var maxXforY:Number;
+			var offsetY:Number;
+			if (yPos < roomCentreY)
+			{
+				offsetY = roomCentreY - yPos;
+			}
+			else
+			{
+				offsetY = yPos - roomCentreY;
+			}
+			maxXforY = (offsetY / (roomHeight)) * (roomWidth);
+			
+			var maxYforX:Number;
+			var offsetX:Number;
+			if (xPos < roomCentreX)
+			{
+				offsetX = roomCentreX - xPos;
+			}
+			else
+			{
+				offsetX = xPos - roomCentreX;
+			}
+			maxYforX = (1 - offsetX / (roomWidth)) * (roomHeight);
+			
+			// Result
+			if ((xPos - 4 <= roomCentreX - maxXforY) || (xPos + 4 >= roomCentreX + maxXforY))
+			{
+				return false;
+			}
+			else if ((yPos - 4 <= roomCentreY - maxYforX) || (yPos + 4 >= roomCentreY + maxYforX))
+			{
+				return false;
+			}
+			
+			return true;
+		}
 	}
 }

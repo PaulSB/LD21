@@ -14,7 +14,8 @@ package states
 	public class PlayState extends FlxState
 	{	
 		private var m_levelManager:LevelManager;
-		private var m_currentLevel:Level;	// Current room reference
+		static public var m_currentLevel:Level;	// Current room reference
+		
 		private var m_player:Player;
 		private var m_enemy:Enemy;	// Test enemy
 		
