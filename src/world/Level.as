@@ -9,13 +9,35 @@ package world
 	 * Ludum Dare 21 - Escape
 	 * @author Paul S Burgess - 20/8/2011
 	 */
-	public class Level extends FlxGroup
+	public class Level //extends FlxGroup
 	{
 		[Embed(source = '../../data/textures/tile_floor.png')] private var imgTileFloor:Class;
+		[Embed(source = '../../data/textures/door.png')] private var imgDoor:Class;
 		
 		private const ROOM_TILE_SIZE:int = 9;
-		static public const ROOM_DRAW_X:int = FlxG.width / 2 - 9;
-		static public const ROOM_DRAW_Y:int = 12;
+		public static const ROOM_DRAW_X:int = FlxG.width / 2 - 9;
+		public static const ROOM_DRAW_Y:int = 12;
+		
+		private const NUM_DOOR_FRAMES_PER_DIRECTION:int = 1;
+		
+		// flags
+		public static const F_DIRECTION_NONE:uint = 0;
+		public static const F_DIRECTION_NE:uint = 1;
+		public static const F_DIRECTION_SE:uint = 2;
+		public static const F_DIRECTION_SW:uint = 4;
+		public static const F_DIRECTION_NW:uint = 8;
+		// psuedo-enum
+		public static const E_DIRECTION_NE:uint = 0;
+		public static const E_DIRECTION_SE:uint = 1;
+		public static const E_DIRECTION_SW:uint = 2;
+		public static const E_DIRECTION_NW:uint = 3;
+		
+		public var m_floor:FlxGroup;
+		public var m_doors:FlxGroup;
+		public var m_door_NE:FlxSprite = null;
+		public var m_door_SE:FlxSprite = null;
+		public var m_door_SW:FlxSprite = null;
+		public var m_door_NW:FlxSprite = null;
 		
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
@@ -25,15 +47,17 @@ package world
 		public var m_roomCentreX:Number = 0;
 		public var m_roomCentreY:Number = 0;
 		
-		public function Level() 
+		public function Level(doorFlags:uint = 0)
 		{
-			super();
+			//super();
 			
 			// Create level
 			var r:Number = (Math.random() * 255.0);
 			var g:Number = (Math.random() * 255.0);
 			var b:Number = (Math.random() * 255.0);
 			var roomColour:uint = 0xff000000 + (r << 16) + (g << 8) + b;
+			
+			m_floor = new FlxGroup;
 			
 			var x:int = ROOM_DRAW_X, y:int = ROOM_DRAW_Y;
 			for (var j:int = 0; j <= ROOM_TILE_SIZE; ++j)
@@ -43,7 +67,7 @@ package world
 					var tile:FlxSprite = new FlxSprite(x,y);
 					tile.loadGraphic(imgTileFloor);
 					tile.color = roomColour;
-					add(tile);
+					m_floor.add(tile);
 					
 					m_tileWidth = tile.width;
 					m_tileHeight = tile.height;
@@ -59,6 +83,52 @@ package world
 			m_roomHeight = m_tileHeight * ROOM_TILE_SIZE;
 			m_roomCentreX = ROOM_DRAW_X + (m_tileWidth / 2.0);
 			m_roomCentreY = ROOM_DRAW_Y + (m_roomHeight / 2.0);
+			
+			var doorX:Number, doorY:Number;
+			if (doorFlags & F_DIRECTION_NE)
+			{
+				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
+				m_door_NE = new FlxSprite(doorX, doorY);
+				m_door_NE.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_NE.color = roomColour;
+				m_door_NE.y -= m_door_NE.height;
+				m_door_NE.addAnimation("closed", [E_DIRECTION_NE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_NE.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_SE)
+			{
+				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
+				m_door_SE = new FlxSprite(doorX, doorY);
+				m_door_SE.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_SE.color = roomColour;
+				m_door_SE.y -= m_door_SE.height;
+				m_door_SE.addAnimation("closed", [E_DIRECTION_SE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_SE.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_SW)
+			{
+				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
+				m_door_SW = new FlxSprite(doorX, doorY);
+				m_door_SW.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_SW.color = roomColour;
+				m_door_SW.y -= m_door_SW.height;
+				m_door_SW.addAnimation("closed", [E_DIRECTION_SW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_SW.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_NW)
+			{
+				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
+				m_door_NW = new FlxSprite(doorX, doorY);
+				m_door_NW.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_NW.color = roomColour;
+				m_door_NW.y -= m_door_NW.height;
+				m_door_NW.addAnimation("closed", [E_DIRECTION_NW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_NW.play("closed");
+			}
 		}
 		
 		public function IsInLevelBounds(xPos:Number, yPos:Number):Boolean

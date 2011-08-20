@@ -16,8 +16,11 @@ package world
 		public function LevelManager() 
 		{
 			m_levels = new Array;
-			m_levels.push(new Level);
-			m_numRooms = 1;
+			
+			// Generate map - TO DO: procedural room node map generation (!)
+			m_numRooms = 2;
+			m_levels.push( new Level(Level.F_DIRECTION_SW) );
+			m_levels.push( new Level(Level.F_DIRECTION_NE) );
 			
 			m_currentRoom = 0;
 		}

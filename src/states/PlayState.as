@@ -6,6 +6,7 @@ package states
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxObject;
 	import org.flixel.FlxState;
+	import org.flixel.FlxText;
 	//import org.flixel.FlxU;
 	import world.Level;
 	import world.LevelManager;
@@ -22,8 +23,12 @@ package states
 		private var m_player:Player;
 		private var m_enemies:FlxGroup;	// Test enemy
 		
+		private var m_instructionText:FlxText;
+		
 		public static var s_layerBackground:FlxGroup;
 		public static var s_layerInScene:FlxGroup;
+		public static var s_layerForeground:FlxGroup;
+		public static var s_layerOSD:FlxGroup;
 		
 		public function PlayState() 
 		{
@@ -36,8 +41,12 @@ package states
 			m_enemies.add(new Enemy(80, 60));	// Test enemy
 			m_enemies.add(new Enemy(120, 40));	// Test enemy
 			
+			m_instructionText = new FlxText(0, 0, FlxG.width);
+			m_instructionText.setFormat(null, 8, 0xffffff, "center");
+			m_instructionText.visible = false;
+			
 			s_layerBackground = new FlxGroup;
-			s_layerBackground.add(m_currentLevel);
+			s_layerBackground.add(m_currentLevel.m_floor);
 			
 			s_layerInScene = new FlxGroup;
 			s_layerInScene.add(m_player);
@@ -46,8 +55,24 @@ package states
 				s_layerInScene.add(enemy);
 			}
 			
+			s_layerForeground = new FlxGroup;
+			
+			if (m_currentLevel.m_door_NE)
+				s_layerBackground.add(m_currentLevel.m_door_NE);
+			if (m_currentLevel.m_door_SE)
+				s_layerForeground.add(m_currentLevel.m_door_SE);
+			if (m_currentLevel.m_door_SW)
+				s_layerForeground.add(m_currentLevel.m_door_SW);
+			if (m_currentLevel.m_door_NW)
+				s_layerBackground.add(m_currentLevel.m_door_NW);
+				
+			s_layerOSD = new FlxGroup;
+			s_layerOSD.add(m_instructionText);
+			
 			add(s_layerBackground);
 			add(s_layerInScene);
+			add(s_layerForeground);
+			add(s_layerOSD);
 		}
 		
 		override public function update():void 
@@ -102,6 +127,32 @@ package states
 			for each (var enemy:Enemy in m_enemies.members)
 			{
 				enemy.setTargetPos(m_player.getCentreStandingPos().x, m_player.getCentreStandingPos().y);
+			}
+			
+			// Item interactions
+			if (m_currentLevel.m_door_NE && FlxG.overlap(m_player, m_currentLevel.m_door_NE))
+			{
+				m_instructionText.text = "Press SPACE to use DOOR";
+				m_instructionText.visible = true;
+			}
+			else if (m_currentLevel.m_door_SE && FlxG.overlap(m_player, m_currentLevel.m_door_SE))
+			{
+				m_instructionText.text = "Press SPACE to use DOOR";
+				m_instructionText.visible = true;
+			}
+			else if (m_currentLevel.m_door_SW && FlxG.overlap(m_player, m_currentLevel.m_door_SW))
+			{
+				m_instructionText.text = "Press SPACE to use DOOR";
+				m_instructionText.visible = true;
+			}
+			else if (m_currentLevel.m_door_NW && FlxG.overlap(m_player, m_currentLevel.m_door_NW))
+			{
+				m_instructionText.text = "Press SPACE to use DOOR";
+				m_instructionText.visible = true;
+			}
+			else
+			{
+				m_instructionText.visible = false;
 			}
 			
 			s_layerInScene.sort("y", ASCENDING);
