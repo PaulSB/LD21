@@ -54,7 +54,8 @@ package world
 		public var m_doorFlags:uint = F_DIRECTION_NONE;
 		public var m_roomColour:uint;
 		public var m_isExitRoom:Boolean = false;
-		public var m_numEnemies:int = 0;
+		//public var m_numEnemies:int = 0;
+		public var m_enemyIDs:Array;
 		
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
@@ -140,6 +141,8 @@ package world
 					m_obstacle.color = m_roomColour;
 				}
 			}
+			
+			m_enemyIDs = new Array;
 		}
 		
 		public function IsInLevelBounds(xPos:Number, yPos:Number):Boolean
@@ -265,6 +268,15 @@ package world
 				
 				m_door_NW.addAnimation("closed", [E_DIRECTION_NW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
 				m_door_NW.play("closed");
+			}
+		}
+		
+		public function setEnemies(number:int):void
+		{
+			for (var enemyLoop:int = 0; enemyLoop < number; enemyLoop++)
+			{
+				var id:int = Math.random() * 5;
+				m_enemyIDs.push(id);
 			}
 		}
 	}

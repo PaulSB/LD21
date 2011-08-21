@@ -128,7 +128,7 @@ package world
 						
 						index = yLoop * rooms[xLoop].length + xLoop;
 						var newLevel:Level = new Level(index, doorFlags);
-						newLevel.m_numEnemies = Math.max(0.2, Math.random()) * (xLoop + yLoop + 1);
+						newLevel.setEnemies(Math.max(0.2, Math.random()) * (xLoop + yLoop + 1));
 						
 						m_levels.push(newLevel);
 						m_numRooms++;
@@ -143,8 +143,8 @@ package world
 				doorFlags |= Level.F_DIRECTION_NW;
 			
 			var exitLevel:Level = new Level(exitIndex, doorFlags, true);
+			exitLevel.setEnemies(exitX + exitY);
  			m_levels.push(exitLevel);
-			exitLevel.m_numEnemies = exitX + exitY;
 			
 			// Connect rooms
 			for (xLoop = 0; xLoop < rooms.length; xLoop++)

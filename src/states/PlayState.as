@@ -27,6 +27,7 @@ package states
 		[Embed(source = '../../data/sound/drop.mp3')] private var sndDrop:Class;
 		[Embed(source = '../../data/sound/hurt1.mp3')] private var sndHurt1:Class;
 		[Embed(source = '../../data/sound/hurt2.mp3')] private var sndHurt2:Class;
+		[Embed(source = '../../data/sound/music.mp3')] private var sndMusic:Class;
 		
 		private var m_levelManager:LevelManager;
 		static public var m_currentLevel:Level;	// Current room reference
@@ -39,6 +40,7 @@ package states
 		private var m_healthBar:HealthBar;
 		private var m_failOverlay:FailOverlay;
 		private var m_winOverlay:WinOverlay;
+		private var m_muteText:FlxText;
 		
 		public static var s_layerBackground:FlxGroup;
 		public static var s_layerInScene:FlxGroup;
@@ -55,6 +57,9 @@ package states
 		private var m_sfxDrop:FlxSound;
 		private var m_sfxHurt1:FlxSound;
 		private var m_sfxHurt2:FlxSound;
+		private var m_music:FlxSound;
+		
+		private static var s_myMute:Boolean = false;	// <- FlxG.mute giving me problems...
 		
 		override public function create():void 
 		{
@@ -76,6 +81,10 @@ package states
 			m_failOverlay.visible = false;
 			m_winOverlay = new WinOverlay;
 			m_winOverlay.visible = false;
+			
+			m_muteText = new FlxText(FlxG.width -64, FlxG.height -16, 64);
+			m_muteText.setFormat(null, 8, 0xffffb0, "center");
+			m_muteText.text = s_myMute ? "[M] Unmute" : "[M] Mute";
 			
 			s_layerBackground = new FlxGroup;
 			s_layerBackground.add(m_currentLevel.m_floor);
@@ -103,6 +112,7 @@ package states
 			s_layerOSD.add(m_healthBar);
 			s_layerOSD.add(m_failOverlay);
 			s_layerOSD.add(m_winOverlay);
+			s_layerOSD.add(m_muteText);
 			
 			add(s_layerBackground);
 			add(s_layerInScene);
@@ -123,12 +133,29 @@ package states
 			m_sfxHurt1.loadEmbedded(sndHurt1);
 			m_sfxHurt2 = new FlxSound;
 			m_sfxHurt2.loadEmbedded(sndHurt2);
+			
+			m_music = new FlxSound;
+			m_music.loadEmbedded(sndMusic, true);
+			m_music.play();
+			if (s_myMute)
+				m_music.pause();
 		}
 		
 		override public function update():void 
 		{
 			if (m_player.alive)
 				m_gameTime += FlxG.elapsed;
+				
+			// Sound mute/unmute
+			if (FlxG.keys.justPressed("M"))
+			{
+				s_myMute = !s_myMute;
+				m_muteText.text = s_myMute ? "[M] Unmute" : "[M] Mute";
+				if (s_myMute)
+					m_music.pause();
+				else
+					m_music.resume();
+			}
 				
 			// Obstacle collisions
 			if (m_currentLevel.m_obstacle)
@@ -191,10 +218,13 @@ package states
 				}
 				else
 				{
-					if (Math.random() < 0.5)
-						m_sfxHurt1.play();
-					else
-						m_sfxHurt2.play();
+					if (!s_myMute)
+					{
+						if (Math.random() < 0.5)
+							m_sfxHurt1.play();
+						else
+							m_sfxHurt2.play();
+					}
 				}
 			}
 			
@@ -222,7 +252,7 @@ package states
 				var alertRoll:Number = Math.random();
 				if (alertRoll < 0.05)
 				{
-					if (alertRoll < 0.01)
+					if (!s_myMute && alertRoll < 0.01)
 						enemy.m_sfxAlert.play();
 					
 					if (activeLoot)
@@ -299,28 +329,32 @@ package states
 							nextRoom = m_currentLevel.m_neighbour_NE;
 							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
-							m_sfxDoor.play();
+							if (!s_myMute)
+								m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_SE)
 						{
 							nextRoom = m_currentLevel.m_neighbour_SE;
 							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
-							m_sfxDoor.play();
+							if (!s_myMute)
+								m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_SW)
 						{
 							nextRoom = m_currentLevel.m_neighbour_SW;
 							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
-							m_sfxDoor.play();
+							if (!s_myMute)
+								m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_NW)
 						{
 							nextRoom = m_currentLevel.m_neighbour_NW;
 							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
-							m_sfxDoor.play();
+							if (!s_myMute)
+								m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_player)
 						{
@@ -334,7 +368,8 @@ package states
 								m_currentLevel.m_pickUp_Loot.push(droppedLoot);
 								s_layerInScene.add(droppedLoot);
 								m_player.m_hasLoot = false;
-								m_sfxDrop.play();
+								if (!s_myMute)
+									m_sfxDrop.play();
 							}
 						}
 						else
@@ -347,7 +382,8 @@ package states
 									s_layerInScene.remove(m_instructionTarget, true);
 									m_currentLevel.m_pickUp_Loot.splice(lootLoop, 1);
 									m_player.m_hasLoot = true;
-									m_sfxPickUp.play();
+									if (!s_myMute)
+										m_sfxPickUp.play();
 								}
 							}
 						}
@@ -408,7 +444,7 @@ package states
 							}
 							
 							m_enemies = new FlxGroup;
-							for (var enemyLoop:int = 0; enemyLoop < m_currentLevel.m_numEnemies; enemyLoop++)
+							for (var enemyLoop:int = 0; enemyLoop < m_currentLevel.m_enemyIDs.length; enemyLoop++)
 							{
 								var distToPlayerX:int = 0, distToPlayerY:int = 0;
 								var enemyX:int, enemyY:int;
@@ -422,7 +458,7 @@ package states
 									distToPlayerX = (enemyX > m_player.x) ? (enemyX - m_player.x) : (m_player.x - enemyX);
 									distToPlayerY = (enemyY > m_player.y) ? (enemyY - m_player.y) : (m_player.y - enemyY);
 								}
-								newEnemy = new Enemy(enemyX, enemyY);
+								newEnemy = new Enemy(enemyX, enemyY, m_currentLevel.m_enemyIDs[enemyLoop]);
 								m_enemies.add(newEnemy);
 								
 								if (m_currentLevel.m_obstacle && FlxG.overlap(newEnemy, m_currentLevel.m_obstacle))
@@ -446,6 +482,8 @@ package states
 								m_winOverlay.setStats(m_gameTime, m_roomsTraversed.length);
 								m_winOverlay.visible = true;
 								m_instructionText.visible = false;
+								
+								m_music.stop();	// The silence is deafening
 							}
 						}
 					}

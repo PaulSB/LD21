@@ -39,7 +39,7 @@ package game
 		
 		public var m_sfxAlert:FlxSound;
 		
-		public function Enemy(xPos:int, yPos:int) 
+		public function Enemy(xPos:int, yPos:int, id:int = -1) 
 		{
 			super(xPos, yPos);
 			
@@ -67,16 +67,16 @@ package game
 			m_targetPos = new FlxPoint;
 			
 			m_sfxAlert = new FlxSound;
-			var soundRoll:Number = Math.random();
-			if (soundRoll < 0.2)
+			var soundRoll:Number = (id > -1) ? 2.0 : Math.random();
+			if (soundRoll < 0.2 || id == 0)
 				m_sfxAlert.loadEmbedded(sndAlert1);
-			else if (soundRoll < 0.4)
+			else if (soundRoll < 0.4 || id == 1)
 				m_sfxAlert.loadEmbedded(sndAlert2);
-			else if (soundRoll < 0.6)
+			else if (soundRoll < 0.6 || id == 2)
 				m_sfxAlert.loadEmbedded(sndAlert3);
-			else if (soundRoll < 0.8)
+			else if (soundRoll < 0.8 || id == 3)
 				m_sfxAlert.loadEmbedded(sndAlert4);
-			else if (soundRoll < 1.0)
+			else if (soundRoll < 1.0 || id == 4)
 				m_sfxAlert.loadEmbedded(sndAlert5);
 		}
 		
