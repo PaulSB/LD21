@@ -13,6 +13,7 @@ package states
 	import ui.FailOverlay;
 	import ui.HealthBar;
 	import ui.WinOverlay;
+	import world.Background;
 	import world.Level;
 	import world.LevelManager;
 	
@@ -34,6 +35,7 @@ package states
 		
 		private var m_player:Player;
 		private var m_enemies:FlxGroup;	// Test enemy
+		private var m_backgroundGFX:Background;
 		
 		private var m_instructionText:FlxText;
 		private var m_instructionTarget:FlxSprite = null;
@@ -65,6 +67,8 @@ package states
 		{
 			super.create();
 			
+			m_backgroundGFX = new Background;
+			
 			m_levelManager = new LevelManager;
 			m_currentLevel = m_levelManager.getCurrentRoom();
 			
@@ -87,6 +91,7 @@ package states
 			m_muteText.text = s_myMute ? "[M] Unmute" : "[M] Mute";
 			
 			s_layerBackground = new FlxGroup;
+			s_layerBackground.add(m_backgroundGFX);
 			s_layerBackground.add(m_currentLevel.m_floor);
 			
 			s_layerInScene = new FlxGroup;
@@ -484,6 +489,7 @@ package states
 								m_instructionText.visible = false;
 								
 								m_music.stop();	// The silence is deafening
+								m_backgroundGFX.visible = false;
 							}
 						}
 					}
