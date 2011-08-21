@@ -24,7 +24,7 @@ package states
 			
 			// Instruction text
 			tTxt = new FlxText(0, FlxG.height -12, FlxG.width, "Press ESCAPE to BEGIN");
-			tTxt.setFormat(null, 8, 0xffffffff, "center");
+			tTxt.setFormat(null, 8, 0xffffffb0, "center");
 			this.add(tTxt);
 			
 			// Stat text

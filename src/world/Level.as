@@ -116,15 +116,18 @@ package world
 			{
 				if (Math.random() < 0.25)
 				{
-					var lootX:int = m_roomCentreX + (Math.random() - 0.5) * (Math.max(0, m_roomWidth - 24));
-					var lootY:int = m_roomCentreY + (Math.random() - 0.5) * (Math.max(0, getMaxYForX(lootX) * 2 - 24));
-					m_pickUp_Loot.push( new Loot(lootX - 9.0, lootY - 9.0, m_roomColour) );
+					var lootX:int = m_roomCentreX + (Math.random() - 0.5) * (Math.max(0, m_roomWidth - 45));
+					var lootY:int = m_roomCentreY + (Math.random() - 0.5) * (Math.max(0, getMaxYForX(lootX) * 2 - 30));
+					var placedLoot:Loot = new Loot(lootX, lootY, m_roomColour);
+					placedLoot.x -= placedLoot.width / 2;
+					placedLoot.y -= placedLoot.height / 2;
+					m_pickUp_Loot.push(placedLoot);
 				}
 				
 				if (Math.random() < 0.3)
 				{
-					var obstacleX:int = m_roomCentreX + (Math.random() - 0.5) * 30;//(Math.max(0, m_roomWidth - 24));
-					var obstacleY:int = m_roomCentreY + (Math.random() - 0.5) * 20;// (Math.max(0, getMaxYForX(lootX) * 2 - 24));
+					var obstacleX:int = m_roomCentreX + (Math.random() - 0.5) * 30;
+					var obstacleY:int = m_roomCentreY + (Math.random() - 0.5) * 20;
 					m_obstacle = new FlxSprite(obstacleX, obstacleY);
 					m_obstacle.loadGraphic(imgTable);
 					m_obstacle.x -= m_obstacle.width / 2;
