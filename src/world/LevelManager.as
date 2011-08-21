@@ -8,6 +8,8 @@ package world
 	 */
 	public class LevelManager
 	{
+		private const MAP_DEPTH:int = 16;
+		
 		private var m_levels:Array;
 		
 		private var m_numRooms:int;
@@ -21,85 +23,53 @@ package world
 			var validMap:Boolean = false;
 			while (!validMap)
 			{
-				var rooms:Array = new Array(9);
-				var arrayLoop:int = 0;
+				var rooms:Array = new Array(MAP_DEPTH +1);
+				var arrayLoop:int = 0, innerArrayLoop:int = 0;
 				for (arrayLoop; arrayLoop < rooms.length; arrayLoop++)
 				{
-					rooms[arrayLoop] = new Array(false, false, false, false, false, false, false, false, false);
+					rooms[arrayLoop] = new Array(MAP_DEPTH +1);
+					for (innerArrayLoop = 0; innerArrayLoop < rooms[arrayLoop].length; innerArrayLoop++)
+					{
+						rooms[arrayLoop][innerArrayLoop] = false;
+					}
 				}
+				
+				var tierConnected:Boolean = false;
 				
 				// TIER 1
 				rooms[0][0] = true;	// Start room
-				// TIER 2
-				var tierConnected:Boolean = false;
-				while (!tierConnected)
+				
+				// TIERS 2-MAX
+				for (var tierLoop:int = 2; tierLoop <= MAP_DEPTH; tierLoop++)
 				{
-					if (Math.random() > 0.5)
+					tierConnected = false;
+					while (!tierConnected)
 					{
-						rooms[0][1] = true;
-						tierConnected = true;
-					}
-					if (Math.random() > 0.5)
-					{
-						rooms[1][0] = true;
-						tierConnected = true;
+						for (var newRoomLoop:int = 0; newRoomLoop <= tierLoop -1; newRoomLoop++)
+						{
+							if (Math.random() > 0.5)
+							{
+								var rX:int = newRoomLoop, rY:int = (tierLoop -1) - newRoomLoop;
+								rooms[rX][rY] = true;
+								if ((rX > 0 && rooms[rX - 1][rY]) || (rY > 0 && rooms[rX][rY - 1]))
+									tierConnected = true;
+							}
+						}
 					}
 				}
-				// TIER 3
-				tierConnected = false;
-				while (!tierConnected)
-				{
-					if (Math.random() > 0.5)
-					{
-						rooms[0][2] = true;
-						if (rooms[0][1])
-							tierConnected = true;
-					}
-					if (Math.random() > 0.5)
-					{
-						rooms[1][1] = true;
-						tierConnected = true;
-					}
-					if (Math.random() > 0.5)
-					{
-						rooms[2][0] = true;
-						if (rooms[1][0])
-							tierConnected = true;
-					}
-				}
+				
 				// EXIT ROOM
-				var numPossibleExits:int = 4;
+				var numPossibleExits:int = MAP_DEPTH +1;
 				var exitX:int, exitY:int;
 				var exitIndex:int;
 				tierConnected = false;
 				var mapGenCounter:int = 0;		// Number of attempts to try find path to exit before doing-over
 				while (!validMap && mapGenCounter < 16)
 				{
-					exitIndex = (Math.random() * numPossibleExits);
+					exitIndex = (Math.random() * (numPossibleExits+1));
 					trace ("exit Index:", exitIndex);
-					switch (exitIndex)
-					{
-						case 0:
-							exitX = 0;
-							exitY = 3;
-							break;
-						case 1:
-							exitX = 1;
-							exitY = 2;
-							break;
-						case 2:
-							exitX = 2;
-							exitY = 1;
-							break;
-						case 3:
-							exitX = 3;
-							exitY = 0;
-							break;
-						default:
-							trace ("INVALID EXIT INDEX");
-							exitX = exitY = 3;
-							break;
-					}
+					exitX = exitIndex;
+					exitY = MAP_DEPTH - exitIndex;
 					
 					// Check if a (direct) path to start exists
 					var pathX:int = exitX, pathY:int = exitY;
@@ -128,7 +98,6 @@ package world
 					}
 					if (pathX == 0 && pathY == 0)
 					{
-						//tierConnected = true;
 						validMap = true;	// Valid path! hurrah!
 					}
 					
