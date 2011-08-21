@@ -10,6 +10,7 @@ package states
 	import org.flixel.FlxText;
 	import ui.FailOverlay;
 	import ui.HealthBar;
+	import ui.WinOverlay;
 	import world.Level;
 	import world.LevelManager;
 	
@@ -29,6 +30,7 @@ package states
 		private var m_instructionTarget:FlxSprite = null;
 		private var m_healthBar:HealthBar;
 		private var m_failOverlay:FailOverlay;
+		private var m_winOverlay:WinOverlay;
 		
 		public static var s_layerBackground:FlxGroup;
 		public static var s_layerInScene:FlxGroup;
@@ -57,6 +59,8 @@ package states
 			m_healthBar = new HealthBar;
 			m_failOverlay = new FailOverlay;
 			m_failOverlay.visible = false;
+			m_winOverlay = new WinOverlay;
+			m_winOverlay.visible = false;
 			
 			s_layerBackground = new FlxGroup;
 			s_layerBackground.add(m_currentLevel.m_floor);
@@ -83,6 +87,7 @@ package states
 			s_layerOSD.add(m_instructionText);
 			s_layerOSD.add(m_healthBar);
 			s_layerOSD.add(m_failOverlay);
+			s_layerOSD.add(m_winOverlay);
 			
 			add(s_layerBackground);
 			add(s_layerInScene);
@@ -144,9 +149,12 @@ package states
 				
 				if (!m_player.alive)
 				{
-					m_failOverlay.setStats(m_gameTime, m_roomsTraversed.length);
-					m_failOverlay.visible = true;
 					m_instructionText.visible = false;
+					if (!m_winOverlay.visible)
+					{
+						m_failOverlay.setStats(m_gameTime, m_roomsTraversed.length);
+						m_failOverlay.visible = true;
+					}
 				}
 			}
 			
@@ -288,6 +296,14 @@ package states
 							{
 								s_layerInScene.add(newEnemy);
 							}
+							
+							if (m_currentLevel.m_isExitRoom)
+							{
+								// Made it to the exit, you win
+								m_winOverlay.setStats(m_gameTime, m_roomsTraversed.length);
+								m_winOverlay.visible = true;
+								m_instructionText.visible = false;
+							}
 						}
 					}
 				}
@@ -306,6 +322,19 @@ package states
 					if (FlxG.keys.justPressed("ESCAPE"))
 					{
 						FlxG.switchState( new PlayState() );
+					}
+				}
+				else if (m_winOverlay.visible)
+				{
+					if (!m_instructionText.visible)
+					{
+						m_instructionText.text = "Press ESCAPE to RETURN";
+						m_instructionText.visible = true;
+					}
+					
+					if (FlxG.keys.justPressed("ESCAPE"))
+					{
+						FlxG.switchState( new MenuState() );
 					}
 				}
 			}

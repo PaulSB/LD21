@@ -15,6 +15,8 @@ package ui
 		
 		public function HealthBar() 
 		{
+			super();
+			
 			m_barBacking = new FlxSprite(8, FlxG.height -16);
 			m_barBacking.makeGraphic(49, 8, 0xff400000);
 			

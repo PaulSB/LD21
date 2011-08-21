@@ -10,6 +10,8 @@ package states
 	 */
 	public class MenuState extends FlxState
 	{
+		private static var m_escapesThisSession:int = -1;
+		
 		override public function create():void 
 		{
 			super.create();
@@ -24,6 +26,18 @@ package states
 			tTxt = new FlxText(0, FlxG.height -12, FlxG.width, "Press ESCAPE to BEGIN");
 			tTxt.setFormat(null, 8, 0xffffffff, "center");
 			this.add(tTxt);
+			
+			// Stat text
+			m_escapesThisSession++;
+			if (m_escapesThisSession > 0)
+			{
+				if (m_escapesThisSession == 1)
+					tTxt = new FlxText(0, 0, FlxG.width, m_escapesThisSession + " \"escape\" this session");
+				else
+					tTxt = new FlxText(0, 0, FlxG.width, m_escapesThisSession + " \"escapes\" this session");
+				tTxt.setFormat(null, 8, 0xffff8080, "center");
+				this.add(tTxt);
+			}
 		}
 		
 		override public function update():void

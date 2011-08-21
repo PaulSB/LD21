@@ -47,6 +47,7 @@ package world
 		public var m_roomIndex:int;
 		public var m_doorFlags:uint = F_DIRECTION_NONE;
 		private var m_roomColour:uint;
+		public var m_isExitRoom:Boolean = false;
 		
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
@@ -70,8 +71,7 @@ package world
 				
 			if (isExit)
 			{
-				// TO DO: setup exit room
-				
+				m_isExitRoom = true;				
 				m_roomColour = 0xff000000;
 			}
 			
