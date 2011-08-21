@@ -200,6 +200,8 @@ package world
 				
 				exitRoom.m_neighbour_NE.m_doorFlags |= Level.F_DIRECTION_SW;
 				exitRoom.m_neighbour_NE.setupDoors(exitRoom.m_neighbour_NE.m_doorFlags);
+				
+				exitRoom.m_door_NE = null;	// Disable door
 			}
 			if (exitRoom.m_door_NW)
 			{
@@ -208,6 +210,8 @@ package world
 				
 				exitRoom.m_neighbour_NW.m_doorFlags |= Level.F_DIRECTION_SE;
 				exitRoom.m_neighbour_NW.setupDoors(exitRoom.m_neighbour_NW.m_doorFlags);
+				
+				exitRoom.m_door_NW = null;	// Disable door
 			}
 			
 			m_currentRoom = 0;
