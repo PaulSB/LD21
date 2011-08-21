@@ -36,9 +36,9 @@ package states
 		public static var s_layerOSD:FlxGroup;
 		
 		// A couple of stats to track
-		// TO DO
+		private var m_roomsTraversed:Array;
+		private var m_gameTime:Number;
 		
-		//public function PlayState() 
 		override public function create():void 
 		{
 			super.create();
@@ -49,8 +49,6 @@ package states
 			m_player = new Player(Level.ROOM_DRAW_X + 3, Level.ROOM_DRAW_Y + m_currentLevel.m_tileHeight / 2);
 			
 			m_enemies = new FlxGroup;
-			m_enemies.add(new Enemy(80, 60));	// Test enemy
-			m_enemies.add(new Enemy(120, 40));	// Test enemy
 			
 			m_instructionText = new FlxText(0, 0, FlxG.width);
 			m_instructionText.setFormat(null, 8, 0xffffff, "center");
@@ -90,10 +88,17 @@ package states
 			add(s_layerInScene);
 			add(s_layerForeground);
 			add(s_layerOSD);
+			
+			m_roomsTraversed = new Array;
+			m_roomsTraversed.push(0);	// First room (0) already "traversed"
+			m_gameTime = 0.0;
 		}
 		
 		override public function update():void 
 		{
+			if (m_player.alive)
+				m_gameTime += FlxG.elapsed;
+			
 			// Player-enemy collisions
 			if (FlxG.collide(m_enemies, m_player))
 			{
@@ -139,6 +144,7 @@ package states
 				
 				if (!m_player.alive)
 				{
+					m_failOverlay.setStats(m_gameTime, m_roomsTraversed.length);
 					m_failOverlay.visible = true;
 					m_instructionText.visible = false;
 				}
@@ -233,6 +239,18 @@ package states
 							m_levelManager.changeCurrentRoom(nextRoom.m_roomIndex);	
 							m_currentLevel = m_levelManager.getCurrentRoom();
 							
+							var roomIsRecorded:Boolean = false;
+							for each (var roomID:int in m_roomsTraversed)
+							{
+								if (m_currentLevel.m_roomIndex == roomID)
+								{
+									roomIsRecorded = true;
+									break;
+								}
+							}
+							if (!roomIsRecorded)
+								m_roomsTraversed.push(m_currentLevel.m_roomIndex);
+							
 							if (m_currentLevel.m_door_NE)
 								s_layerBackground.add(m_currentLevel.m_door_NE);
 							if (m_currentLevel.m_door_SE)
@@ -276,7 +294,7 @@ package states
 			}
 			else
 			{
-				// Dead, space will proceed from here
+				// Dead, ESCAPE will proceed from here
 				if (m_failOverlay.visible)
 				{
 					if (!m_instructionText.visible)

@@ -10,10 +10,10 @@ package states
 	 */
 	public class MenuState extends FlxState
 	{
-		//[Embed(source = "../../data/font/Robotaur Condensed.ttf", fontFamily = "Robotaur", embedAsCFF = "false")] private var junk:String;
-		
-		public function MenuState() 
+		override public function create():void 
 		{
+			super.create();
+			
 			// Title text
 			var tTxt:FlxText;
 			tTxt = new FlxText(0, FlxG.height / 2 -12, FlxG.width, "ESCAPE");
