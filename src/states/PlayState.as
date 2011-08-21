@@ -342,7 +342,7 @@ package states
 								s_layerForeground.add(m_currentLevel.m_door_SW);
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.add(m_currentLevel.m_door_NW);
-								
+							
 							for each (var newLoot:Loot in m_currentLevel.m_pickUp_Loot)
 								s_layerInScene.add(newLoot);
 								
@@ -353,7 +353,7 @@ package states
 							}
 							
 							m_enemies = new FlxGroup;
-							for (var enemyLoop:int = 0; enemyLoop < 3; enemyLoop++)		// TO DO: get enemies level should have
+							for (var enemyLoop:int = 0; enemyLoop < m_currentLevel.m_numEnemies; enemyLoop++)
 							{
 								var distToPlayerX:int = 0, distToPlayerY:int = 0;
 								var enemyX:int, enemyY:int;

@@ -8,7 +8,7 @@ package world
 	 */
 	public class LevelManager
 	{
-		private const MAP_DEPTH:int = 16;
+		private const MAP_DEPTH:int = 20;
 		
 		private var m_levels:Array;
 		
@@ -127,7 +127,10 @@ package world
 							doorFlags |= Level.F_DIRECTION_NW;
 						
 						index = yLoop * rooms[xLoop].length + xLoop;
-						m_levels.push( new Level(index, doorFlags) );
+						var newLevel:Level = new Level(index, doorFlags);
+						newLevel.m_numEnemies = Math.max(0.2, Math.random()) * (xLoop + yLoop + 1);
+						
+						m_levels.push(newLevel);
 						m_numRooms++;
 					}
 				}
@@ -139,7 +142,9 @@ package world
 			if (exitX > 0 && rooms[exitX -1][exitY])
 				doorFlags |= Level.F_DIRECTION_NW;
 			
-			m_levels.push( new Level(exitIndex, doorFlags, true) );
+			var exitLevel:Level = new Level(exitIndex, doorFlags, true);
+ 			m_levels.push(exitLevel);
+			exitLevel.m_numEnemies = exitX + exitY;
 			
 			// Connect rooms
 			for (xLoop = 0; xLoop < rooms.length; xLoop++)
