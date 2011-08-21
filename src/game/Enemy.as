@@ -11,9 +11,8 @@ package game
 	{
 		[Embed(source = '../../data/textures/enemy.png')] private var imgEnemy:Class;
 		
-		//private const HORIZONTAL_WALK_SPEED:int = 30;
-		//private const VERTICAL_WALK_SPEED:int = 20;
-		private const WALK_SPEED:int = 20;
+		private const HORIZONTAL_WALK_SPEED:int = 18;
+		private const VERTICAL_WALK_SPEED:int = 12;
 		
 		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 1;
 		// Pseudo-enum
@@ -56,16 +55,13 @@ package game
 			// Move to target where one exists
 			if (m_hasTarget)
 			{
-				//var centreX:Number = getCentreStandingPos().x;
-				//var centreY:Number = getCentreStandingPos().y;
-				
 				var pathX:Number = m_targetPos.x - getCentreStandingPos().x;
 				var pathY:Number = m_targetPos.y - getCentreStandingPos().y;
 				var pathLength:Number = Math.sqrt(pathX * pathX + pathY * pathY);
 				pathX /= pathLength;
 				pathY /= pathLength;
-				pathX *= WALK_SPEED;
-				pathY *= WALK_SPEED;
+				pathX *= HORIZONTAL_WALK_SPEED;
+				pathY *= VERTICAL_WALK_SPEED;
 				
 				velocity.x = pathX;
 				velocity.y = pathY;

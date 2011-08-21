@@ -9,7 +9,7 @@ package world
 	 * Ludum Dare 21 - Escape
 	 * @author Paul S Burgess - 20/8/2011
 	 */
-	public class Level //extends FlxGroup
+	public class Level
 	{
 		[Embed(source = '../../data/textures/tile_floor.png')] private var imgTileFloor:Class;
 		[Embed(source = '../../data/textures/door.png')] private var imgDoor:Class;
@@ -32,12 +32,19 @@ package world
 		public static const E_DIRECTION_SW:uint = 2;
 		public static const E_DIRECTION_NW:uint = 3;
 		
+		public var m_neighbour_NE:Level = null;
+		public var m_neighbour_SE:Level = null;
+		public var m_neighbour_SW:Level = null;
+		public var m_neighbour_NW:Level = null;
+		
 		public var m_floor:FlxGroup;
 		public var m_doors:FlxGroup;
 		public var m_door_NE:FlxSprite = null;
 		public var m_door_SE:FlxSprite = null;
 		public var m_door_SW:FlxSprite = null;
 		public var m_door_NW:FlxSprite = null;
+		
+		public var m_roomIndex:int;
 		
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
@@ -47,9 +54,9 @@ package world
 		public var m_roomCentreX:Number = 0;
 		public var m_roomCentreY:Number = 0;
 		
-		public function Level(doorFlags:uint = 0)
+		public function Level(roomIndex:int, doorFlags:uint = 0)
 		{
-			//super();
+			m_roomIndex = roomIndex;
 			
 			// Create level
 			var r:Number = (Math.random() * 255.0);
