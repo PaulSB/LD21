@@ -6,6 +6,7 @@ package states
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxObject;
+	import org.flixel.FlxSound;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
@@ -21,6 +22,10 @@ package states
 	 */
 	public class PlayState extends FlxState
 	{	
+		[Embed(source = '../../data/sound/door.mp3')] private var sndDoor:Class;
+		[Embed(source = '../../data/sound/pickup.mp3')] private var sndPickUp:Class;
+		[Embed(source = '../../data/sound/drop.mp3')] private var sndDrop:Class;
+		
 		private var m_levelManager:LevelManager;
 		static public var m_currentLevel:Level;	// Current room reference
 		
@@ -41,6 +46,11 @@ package states
 		// A couple of stats to track
 		private var m_roomsTraversed:Array;
 		private var m_gameTime:Number;
+		
+		// Sound
+		private var m_sfxDoor:FlxSound;
+		private var m_sfxPickUp:FlxSound;
+		private var m_sfxDrop:FlxSound;
 		
 		override public function create():void 
 		{
@@ -98,6 +108,13 @@ package states
 			m_roomsTraversed = new Array;
 			m_roomsTraversed.push(0);	// First room (0) already "traversed"
 			m_gameTime = 0.0;
+			
+			m_sfxDoor = new FlxSound;
+			m_sfxDoor.loadEmbedded(sndDoor);
+			m_sfxPickUp = new FlxSound;
+			m_sfxPickUp.loadEmbedded(sndPickUp);
+			m_sfxDrop = new FlxSound;
+			m_sfxDrop.loadEmbedded(sndDrop);
 		}
 		
 		override public function update():void 
@@ -263,24 +280,28 @@ package states
 							nextRoom = m_currentLevel.m_neighbour_NE;
 							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
+							m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_SE)
 						{
 							nextRoom = m_currentLevel.m_neighbour_SE;
 							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
+							m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_SW)
 						{
 							nextRoom = m_currentLevel.m_neighbour_SW;
 							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
+							m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_currentLevel.m_door_NW)
 						{
 							nextRoom = m_currentLevel.m_neighbour_NW;
 							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
+							m_sfxDoor.play();
 						}
 						else if (m_instructionTarget == m_player)
 						{
@@ -294,6 +315,7 @@ package states
 								m_currentLevel.m_pickUp_Loot.push(droppedLoot);
 								s_layerInScene.add(droppedLoot);
 								m_player.m_hasLoot = false;
+								m_sfxDrop.play();
 							}
 						}
 						else
@@ -306,6 +328,7 @@ package states
 									s_layerInScene.remove(m_instructionTarget, true);
 									m_currentLevel.m_pickUp_Loot.splice(lootLoop, 1);
 									m_player.m_hasLoot = true;
+									m_sfxPickUp.play();
 								}
 							}
 						}
