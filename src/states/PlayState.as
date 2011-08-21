@@ -1,6 +1,7 @@
 package states 
 {
 	import game.Enemy;
+	import game.Loot;
 	import game.Player;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
@@ -164,7 +165,9 @@ package states
 			// Enemy targetting
 			for each (var enemy:Enemy in m_enemies.members)
 			{
-				enemy.setTargetPos(m_player.getCentreStandingPos().x, m_player.getCentreStandingPos().y);
+				// Alertness check
+				//if (Math.random() < 0.1)
+					enemy.setTargetPos(m_player.getCentreStandingPos().x, m_player.getCentreStandingPos().y);
 			}
 			
 			// Item instructions
@@ -195,9 +198,28 @@ package states
 					m_instructionTarget = m_currentLevel.m_door_NW;
 				}
 				else
-				{
+				{ 	
 					m_instructionText.visible = false;
 					m_instructionTarget = null;
+					
+					if (m_player.m_hasLoot && !m_currentLevel.m_isExitRoom)
+					{
+						m_instructionText.text = "Press SPACE to drop LOOT";
+						m_instructionText.visible = true;
+						m_instructionTarget = m_player;
+					}
+					else
+					{
+						for each (var loot:Loot in m_currentLevel.m_pickUp_Loot)
+						{
+							if (FlxG.overlap(m_player, loot))
+							{
+								m_instructionText.text = "Press SPACE to pick up LOOT";
+								m_instructionText.visible = true;
+								m_instructionTarget = loot;
+							}
+						}
+					}
 				}
 				
 				// Item actions
@@ -230,6 +252,32 @@ package states
 							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
 							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
 						}
+						else if (m_instructionTarget == m_player)
+						{
+							if (m_player.m_hasLoot)
+							{
+								// Drop loot
+								var lootX:int = m_player.x;
+								var lootY:int = m_player.y + m_player.height;
+								var droppedLoot:Loot = new Loot(lootX, lootY, m_currentLevel.m_roomColour);
+								m_currentLevel.m_pickUp_Loot.push(droppedLoot);
+								s_layerInScene.add(droppedLoot);
+								m_player.m_hasLoot = false;
+							}
+						}
+						else
+						{
+							for (var lootLoop:int = 0; lootLoop < m_currentLevel.m_pickUp_Loot.length; lootLoop++)
+							{
+								if (m_instructionTarget == m_currentLevel.m_pickUp_Loot[lootLoop])
+								{
+									// Pick up loot
+									s_layerInScene.remove(m_instructionTarget, true);
+									m_currentLevel.m_pickUp_Loot.splice(lootLoop, 1);
+									m_player.m_hasLoot = true;
+								}
+							}
+						}
 						
 						if (nextRoom)
 						{
@@ -244,8 +292,8 @@ package states
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.remove(m_currentLevel.m_door_NW, true);
 								
-							if (m_currentLevel.m_pickUp_Loot)
-								s_layerInScene.remove(m_currentLevel.m_pickUp_Loot, true);
+							for each (var oldLoot:Loot in m_currentLevel.m_pickUp_Loot)
+								s_layerInScene.remove(oldLoot, true);
 							
 							m_levelManager.changeCurrentRoom(nextRoom.m_roomIndex);	
 							m_currentLevel = m_levelManager.getCurrentRoom();
@@ -271,8 +319,8 @@ package states
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.add(m_currentLevel.m_door_NW);
 								
-							if (m_currentLevel.m_pickUp_Loot)
-								s_layerInScene.add(m_currentLevel.m_pickUp_Loot);
+							for each (var newLoot:Loot in m_currentLevel.m_pickUp_Loot)
+								s_layerInScene.add(newLoot);
 								
 							// Populate
 							for each (var oldEnemy:Enemy in m_enemies.members)

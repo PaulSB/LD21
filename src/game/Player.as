@@ -26,6 +26,8 @@ package game
 		public var m_spriteWidth:int;
 		public var m_spriteHeight:int;
 		
+		public var m_hasLoot:Boolean = false;
+		
 		public function Player(xPos:int, yPos:int) 
 		{
 			super(xPos, yPos);

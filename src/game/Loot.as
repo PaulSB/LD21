@@ -22,6 +22,7 @@ package game
 			height -= offset.y;
 			y += offset.y;
 			
+			color = colour;
 			alpha = 0.75;
 		}
 	}

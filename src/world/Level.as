@@ -46,11 +46,11 @@ package world
 		public var m_door_NW:FlxSprite = null;
 		
 		// Pick-ups
-		public var m_pickUp_Loot:Loot;
+		public var m_pickUp_Loot:Array;
 		
 		public var m_roomIndex:int;
 		public var m_doorFlags:uint = F_DIRECTION_NONE;
-		private var m_roomColour:uint;
+		public var m_roomColour:uint;
 		public var m_isExitRoom:Boolean = false;
 		
 		public var m_tileWidth:int = 0;
@@ -108,11 +108,12 @@ package world
 			
 			setupDoors(doorFlags);
 			
-			if (m_roomIndex > 0 && !m_isExitRoom)	// TO DO: don't have loot in every room!
+			if (m_roomIndex > 0 && !m_isExitRoom)
 			{
 				var lootX:int = m_roomCentreX - (Math.random() - 0.5) * (Math.max(0, m_roomWidth - 24));
 				var lootY:int = m_roomCentreY - (Math.random() - 0.5) * (Math.max(0, getMaxYForX(lootX) * 2 - 24));
-				m_pickUp_Loot = new Loot(lootX - 9, lootY - 9, m_roomColour);
+				m_pickUp_Loot = new Array;
+				m_pickUp_Loot.push( new Loot(lootX - 9.0, lootY - 9.0, m_roomColour) );	// TO DO: don't have loot in every room!
 			}
 		}
 		
