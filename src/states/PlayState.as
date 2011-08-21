@@ -8,6 +8,7 @@ package states
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
+	import ui.HealthBar;
 	import world.Level;
 	import world.LevelManager;
 	
@@ -25,6 +26,7 @@ package states
 		
 		private var m_instructionText:FlxText;
 		private var m_instructionTarget:FlxSprite = null;
+		private var m_healthBar:HealthBar;
 		
 		public static var s_layerBackground:FlxGroup;
 		public static var s_layerInScene:FlxGroup;
@@ -45,6 +47,8 @@ package states
 			m_instructionText = new FlxText(0, 0, FlxG.width);
 			m_instructionText.setFormat(null, 8, 0xffffff, "center");
 			m_instructionText.visible = false;
+			
+			m_healthBar = new HealthBar;
 			
 			s_layerBackground = new FlxGroup;
 			s_layerBackground.add(m_currentLevel.m_floor);
@@ -69,6 +73,7 @@ package states
 				
 			s_layerOSD = new FlxGroup;
 			s_layerOSD.add(m_instructionText);
+			s_layerOSD.add(m_healthBar);
 			
 			add(s_layerBackground);
 			add(s_layerInScene);
@@ -118,7 +123,8 @@ package states
 					}
 				}
 					
-				m_player.hurt(0.0);// (0.1);	// TEMP invincible for testing
+				m_player.hurt(0.05);
+				m_healthBar.updateHP(m_player.health);
 			}
 			
 			// Enemy-enemy collisions
