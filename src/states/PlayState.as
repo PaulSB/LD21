@@ -104,6 +104,13 @@ package states
 		{
 			if (m_player.alive)
 				m_gameTime += FlxG.elapsed;
+				
+			// Obstacle collisions
+			if (m_currentLevel.m_obstacle)
+			{
+				FlxG.collide(m_currentLevel.m_obstacle, m_player);
+				FlxG.collide(m_currentLevel.m_obstacle, m_enemies);
+			}
 			
 			// Player-enemy collisions
 			if (FlxG.collide(m_enemies, m_player, enemyAttackAnim))
@@ -316,6 +323,9 @@ package states
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.remove(m_currentLevel.m_door_NW, true);
 								
+							if (m_currentLevel.m_obstacle)
+								s_layerInScene.remove(m_currentLevel.m_obstacle, true);
+								
 							for each (var oldLoot:Loot in m_currentLevel.m_pickUp_Loot)
 								s_layerInScene.remove(oldLoot, true);
 							
@@ -342,6 +352,9 @@ package states
 								s_layerForeground.add(m_currentLevel.m_door_SW);
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.add(m_currentLevel.m_door_NW);
+								
+							if (m_currentLevel.m_obstacle)
+								s_layerInScene.add(m_currentLevel.m_obstacle);
 							
 							for each (var newLoot:Loot in m_currentLevel.m_pickUp_Loot)
 								s_layerInScene.add(newLoot);
@@ -367,7 +380,17 @@ package states
 									distToPlayerX = (enemyX > m_player.x) ? (enemyX - m_player.x) : (m_player.x - enemyX);
 									distToPlayerY = (enemyY > m_player.y) ? (enemyY - m_player.y) : (m_player.y - enemyY);
 								}
-								m_enemies.add(new Enemy(enemyX, enemyY));
+								newEnemy = new Enemy(enemyX, enemyY);
+								m_enemies.add(newEnemy);
+								
+								if (m_currentLevel.m_obstacle && FlxG.overlap(newEnemy, m_currentLevel.m_obstacle))
+								{
+									var incX:Boolean = ((m_currentLevel.m_obstacle.x + m_currentLevel.m_obstacle.width / 2) < FlxG.width);
+									while (FlxG.overlap(newEnemy, m_currentLevel.m_obstacle))
+									{
+										newEnemy.x = incX ? (newEnemy.x + 1) : (newEnemy.x - 1);
+									}
+								}
 							}
 
 							for each (var newEnemy:Enemy in m_enemies.members)

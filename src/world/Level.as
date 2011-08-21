@@ -14,6 +14,7 @@ package world
 	{
 		[Embed(source = '../../data/textures/tile_floor.png')] private var imgTileFloor:Class;
 		[Embed(source = '../../data/textures/door.png')] private var imgDoor:Class;
+		[Embed(source = '../../data/textures/table.png')] private var imgTable:Class;
 		
 		private const ROOM_TILE_SIZE:int = 9;
 		public static const ROOM_DRAW_X:int = FlxG.width / 2 - 9;
@@ -44,6 +45,7 @@ package world
 		public var m_door_SE:FlxSprite = null;
 		public var m_door_SW:FlxSprite = null;
 		public var m_door_NW:FlxSprite = null;
+		public var m_obstacle:FlxSprite = null;
 		
 		// Pick-ups
 		public var m_pickUp_Loot:Array;
@@ -109,12 +111,31 @@ package world
 			
 			setupDoors(doorFlags);
 			
+			m_pickUp_Loot = new Array;
 			if (m_roomIndex > 0 && !m_isExitRoom)
 			{
-				var lootX:int = m_roomCentreX - (Math.random() - 0.5) * (Math.max(0, m_roomWidth - 24));
-				var lootY:int = m_roomCentreY - (Math.random() - 0.5) * (Math.max(0, getMaxYForX(lootX) * 2 - 24));
-				m_pickUp_Loot = new Array;
-				m_pickUp_Loot.push( new Loot(lootX - 9.0, lootY - 9.0, m_roomColour) );	// TO DO: don't have loot in every room!
+				if (Math.random() < 0.25)
+				{
+					var lootX:int = m_roomCentreX + (Math.random() - 0.5) * (Math.max(0, m_roomWidth - 24));
+					var lootY:int = m_roomCentreY + (Math.random() - 0.5) * (Math.max(0, getMaxYForX(lootX) * 2 - 24));
+					m_pickUp_Loot.push( new Loot(lootX - 9.0, lootY - 9.0, m_roomColour) );
+				}
+				
+				if (Math.random() < 0.3)
+				{
+					var obstacleX:int = m_roomCentreX + (Math.random() - 0.5) * 30;//(Math.max(0, m_roomWidth - 24));
+					var obstacleY:int = m_roomCentreY + (Math.random() - 0.5) * 20;// (Math.max(0, getMaxYForX(lootX) * 2 - 24));
+					m_obstacle = new FlxSprite(obstacleX, obstacleY);
+					m_obstacle.loadGraphic(imgTable);
+					m_obstacle.x -= m_obstacle.width / 2;
+					m_obstacle.y -= m_obstacle.height / 2;
+					// Adjust collision rect:
+					m_obstacle.offset.y = 8;
+					m_obstacle.height -= m_obstacle.offset.y;
+					m_obstacle.y += m_obstacle.offset.y;
+					m_obstacle.immovable = true;
+					m_obstacle.color = m_roomColour;
+				}
 			}
 		}
 		
