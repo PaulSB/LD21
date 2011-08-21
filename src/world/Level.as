@@ -45,24 +45,35 @@ package world
 		public var m_door_NW:FlxSprite = null;
 		
 		public var m_roomIndex:int;
+		public var m_doorFlags:uint = F_DIRECTION_NONE;
+		private var m_roomColour:uint;
 		
 		public var m_tileWidth:int = 0;
 		public var m_tileHeight:int = 0;
 		
-		private var m_roomWidth:Number = 0;
-		private var m_roomHeight:Number = 0;
+		public var m_roomWidth:Number = 0;
+		public var m_roomHeight:Number = 0;
 		public var m_roomCentreX:Number = 0;
 		public var m_roomCentreY:Number = 0;
 		
-		public function Level(roomIndex:int, doorFlags:uint = 0)
+		public function Level(roomIndex:int, doorFlags:uint = 0, isExit:Boolean = false)
 		{
 			m_roomIndex = roomIndex;
 			
 			// Create level
-			var r:Number = (Math.random() * 255.0);
-			var g:Number = (Math.random() * 255.0);
-			var b:Number = (Math.random() * 255.0);
-			var roomColour:uint = 0xff000000 + (r << 16) + (g << 8) + b;
+			var r:Number = Math.max(0.1, (Math.random() * 255.0));
+			var g:Number = Math.max(0.1, (Math.random() * 255.0));
+			var b:Number = Math.max(0.1, (Math.random() * 255.0));
+			m_roomColour = 0xff000000 + (r << 16) + (g << 8) + b;
+			if (roomIndex == 0)
+				m_roomColour = 0xffffffff;
+				
+			if (isExit)
+			{
+				// TO DO: setup exit room
+				
+				m_roomColour = 0xff000000;
+			}
 			
 			m_floor = new FlxGroup;
 			
@@ -73,7 +84,7 @@ package world
 				{
 					var tile:FlxSprite = new FlxSprite(x,y);
 					tile.loadGraphic(imgTileFloor);
-					tile.color = roomColour;
+					tile.color = m_roomColour;
 					m_floor.add(tile);
 					
 					m_tileWidth = tile.width;
@@ -91,71 +102,7 @@ package world
 			m_roomCentreX = ROOM_DRAW_X + (m_tileWidth / 2.0);
 			m_roomCentreY = ROOM_DRAW_Y + (m_roomHeight / 2.0);
 			
-			var doorX:Number, doorY:Number;
-			if (doorFlags & F_DIRECTION_NE)
-			{
-				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
-				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
-				m_door_NE = new FlxSprite(doorX, doorY);
-				m_door_NE.loadGraphic(imgDoor, true, false, 18, 32);
-				m_door_NE.color = roomColour;
-				m_door_NE.y -= m_door_NE.height;
-				// Adjust collision rect:
-				m_door_NE.offset.y = (m_door_NE.height - m_door_NE.width);
-				m_door_NE.height -= m_door_NE.offset.y;
-				m_door_NE.y += m_door_NE.offset.y;
-				
-				m_door_NE.addAnimation("closed", [E_DIRECTION_NE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
-				m_door_NE.play("closed");
-			}
-			if (doorFlags & F_DIRECTION_SE)
-			{
-				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
-				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
-				m_door_SE = new FlxSprite(doorX, doorY);
-				m_door_SE.loadGraphic(imgDoor, true, false, 18, 32);
-				m_door_SE.color = roomColour;
-				m_door_SE.y -= m_door_SE.height;
-				// Adjust collision rect:
-				m_door_SE.offset.y = (m_door_SE.height - m_door_SE.width);
-				m_door_SE.height -= m_door_SE.offset.y;
-				m_door_SE.y += m_door_SE.offset.y;
-				
-				m_door_SE.addAnimation("closed", [E_DIRECTION_SE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
-				m_door_SE.play("closed");
-			}
-			if (doorFlags & F_DIRECTION_SW)
-			{
-				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
-				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
-				m_door_SW = new FlxSprite(doorX, doorY);
-				m_door_SW.loadGraphic(imgDoor, true, false, 18, 32);
-				m_door_SW.color = roomColour;
-				m_door_SW.y -= m_door_SW.height;
-				// Adjust collision rect:
-				m_door_SW.offset.y = (m_door_SW.height - m_door_SW.width);
-				m_door_SW.height -= m_door_SW.offset.y;
-				m_door_SW.y += m_door_SW.offset.y;
-				
-				m_door_SW.addAnimation("closed", [E_DIRECTION_SW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
-				m_door_SW.play("closed");
-			}
-			if (doorFlags & F_DIRECTION_NW)
-			{
-				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
-				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
-				m_door_NW = new FlxSprite(doorX, doorY);
-				m_door_NW.loadGraphic(imgDoor, true, false, 18, 32);
-				m_door_NW.color = roomColour;
-				m_door_NW.y -= m_door_NW.height;
-				// Adjust collision rect:
-				m_door_NW.offset.y = (m_door_NW.height - m_door_NW.width);
-				m_door_NW.height -= m_door_NW.offset.y;
-				m_door_NW.y += m_door_NW.offset.y;
-				
-				m_door_NW.addAnimation("closed", [E_DIRECTION_NW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
-				m_door_NW.play("closed");
-			}
+			setupDoors(doorFlags);
 		}
 		
 		public function IsInLevelBounds(xPos:Number, yPos:Number):Boolean
@@ -208,6 +155,80 @@ package world
 			maxYforX = (1 - offsetX / (m_roomWidth / 2.0)) * (m_roomHeight / 2.0);
 			
 			return maxYforX;
+		}
+		
+		public function setupDoors(doorFlags:uint):void
+		{
+			// Clear any old doors
+			m_door_NE = m_door_SE = m_door_SW = m_door_NW = null;
+			
+			m_doorFlags = doorFlags;
+			
+			var doorX:Number, doorY:Number;
+			if (doorFlags & F_DIRECTION_NE)
+			{
+				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
+				m_door_NE = new FlxSprite(doorX, doorY);
+				m_door_NE.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_NE.color = m_roomColour;
+				m_door_NE.y -= m_door_NE.height;
+				// Adjust collision rect:
+				m_door_NE.offset.y = (m_door_NE.height - m_door_NE.width);
+				m_door_NE.height -= m_door_NE.offset.y;
+				m_door_NE.y += m_door_NE.offset.y;
+				
+				m_door_NE.addAnimation("closed", [E_DIRECTION_NE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_NE.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_SE)
+			{
+				doorX = ROOM_DRAW_X + 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
+				m_door_SE = new FlxSprite(doorX, doorY);
+				m_door_SE.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_SE.color = m_roomColour;
+				m_door_SE.y -= m_door_SE.height;
+				// Adjust collision rect:
+				m_door_SE.offset.y = (m_door_SE.height - m_door_SE.width);
+				m_door_SE.height -= m_door_SE.offset.y;
+				m_door_SE.y += m_door_SE.offset.y;
+				
+				m_door_SE.addAnimation("closed", [E_DIRECTION_SE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_SE.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_SW)
+			{
+				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 7.0 * m_tileHeight;
+				m_door_SW = new FlxSprite(doorX, doorY);
+				m_door_SW.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_SW.color = m_roomColour;
+				m_door_SW.y -= m_door_SW.height;
+				// Adjust collision rect:
+				m_door_SW.offset.y = (m_door_SW.height - m_door_SW.width);
+				m_door_SW.height -= m_door_SW.offset.y;
+				m_door_SW.y += m_door_SW.offset.y;
+				
+				m_door_SW.addAnimation("closed", [E_DIRECTION_SW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_SW.play("closed");
+			}
+			if (doorFlags & F_DIRECTION_NW)
+			{
+				doorX = ROOM_DRAW_X - 2.0 * m_tileWidth;
+				doorY = ROOM_DRAW_Y + 3.0 * m_tileHeight;
+				m_door_NW = new FlxSprite(doorX, doorY);
+				m_door_NW.loadGraphic(imgDoor, true, false, 18, 32);
+				m_door_NW.color = m_roomColour;
+				m_door_NW.y -= m_door_NW.height;
+				// Adjust collision rect:
+				m_door_NW.offset.y = (m_door_NW.height - m_door_NW.width);
+				m_door_NW.height -= m_door_NW.offset.y;
+				m_door_NW.y += m_door_NW.offset.y;
+				
+				m_door_NW.addAnimation("closed", [E_DIRECTION_NW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
+				m_door_NW.play("closed");
+			}
 		}
 	}
 }

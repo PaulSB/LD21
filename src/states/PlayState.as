@@ -224,9 +224,22 @@ package states
 						}
 						
 						m_enemies = new FlxGroup;
-						m_enemies.add(new Enemy(80, 60));	// Test enemy
-						m_enemies.add(new Enemy(120, 40));	// Test enemy
-						m_enemies.add(new Enemy(60, 80));	// Test enemy
+						for (var enemyLoop:int = 0; enemyLoop < 3; enemyLoop++)		// TO DO: get enemies level should have
+						{
+							var distToPlayerX:int = 0, distToPlayerY:int = 0;
+							var enemyX:int, enemyY:int;
+							while (distToPlayerX < 8 || distToPlayerY < 8)
+							{
+								enemyX = m_currentLevel.m_roomCentreX
+											- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.m_roomWidth - 16));
+								enemyY = m_currentLevel.m_roomCentreY
+											- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.getMaxYForX(enemyX) * 2 - 16));
+											
+								distToPlayerX = (enemyX > m_player.x) ? (enemyX - m_player.x) : (m_player.x - enemyX);
+								distToPlayerY = (enemyY > m_player.y) ? (enemyY - m_player.y) : (m_player.y - enemyY);
+							}
+							m_enemies.add(new Enemy(enemyX, enemyY));
+						}
 
 						for each (var newEnemy:Enemy in m_enemies.members)
 						{
