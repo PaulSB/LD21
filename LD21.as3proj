@@ -71,7 +71,7 @@
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <!-- example: <hidden path="..." /> -->
+    <hidden path="data\textures\Thumbs.db" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />

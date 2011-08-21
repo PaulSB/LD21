@@ -243,6 +243,9 @@ package states
 								s_layerForeground.remove(m_currentLevel.m_door_SW, true);
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.remove(m_currentLevel.m_door_NW, true);
+								
+							if (m_currentLevel.m_pickUp_Loot)
+								s_layerInScene.remove(m_currentLevel.m_pickUp_Loot, true);
 							
 							m_levelManager.changeCurrentRoom(nextRoom.m_roomIndex);	
 							m_currentLevel = m_levelManager.getCurrentRoom();
@@ -267,6 +270,9 @@ package states
 								s_layerForeground.add(m_currentLevel.m_door_SW);
 							if (m_currentLevel.m_door_NW)
 								s_layerBackground.add(m_currentLevel.m_door_NW);
+								
+							if (m_currentLevel.m_pickUp_Loot)
+								s_layerInScene.add(m_currentLevel.m_pickUp_Loot);
 								
 							// Populate
 							for each (var oldEnemy:Enemy in m_enemies.members)
