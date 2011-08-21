@@ -16,7 +16,7 @@ package game
 		private const HORIZONTAL_RUN_SPEED:int = 60;
 		private const VERTICAL_RUN_SPEED:int = 40;
 		
-		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 1;
+		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 2;
 		// Pseudo-enum
 		private const E_DIRECTION_LEFT:int = 0;
 		private const E_DIRECTION_RIGHT:int = 1;
@@ -39,6 +39,11 @@ package game
 			addAnimation("Idle_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			
+			addAnimation("Dead_L", [E_DIRECTION_LEFT * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Dead_R", [E_DIRECTION_RIGHT * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Dead_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Dead_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			
 			// Adjust collision rect
 			offset.x = 3;
 			offset.y = (height - height / 4);
@@ -51,30 +56,33 @@ package game
 			var centreX:Number = getCentreStandingPos().x;
 			var centreY:Number = getCentreStandingPos().y;
 			
-			if (FlxG.keys.pressed("RIGHT") && PlayState.m_currentLevel.IsInLevelBounds(centreX+1, centreY))
+			if (alive)
 			{
-				velocity.x = HORIZONTAL_RUN_SPEED;
-			}
-			else if (FlxG.keys.pressed("LEFT") && PlayState.m_currentLevel.IsInLevelBounds(centreX-1, centreY))
-			{
-				velocity.x = -HORIZONTAL_RUN_SPEED;
-			}
-			else
-			{
-				velocity.x = 0;
-			}
-			
-			if (FlxG.keys.pressed("DOWN") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY+1))
-			{
-				velocity.y = VERTICAL_RUN_SPEED;
-			}
-			else if (FlxG.keys.pressed("UP") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY-1))
-			{
-				velocity.y = -VERTICAL_RUN_SPEED;
-			}
-			else
-			{
-				velocity.y = 0;
+				if (FlxG.keys.pressed("RIGHT") && PlayState.m_currentLevel.IsInLevelBounds(centreX+1, centreY))
+				{
+					velocity.x = HORIZONTAL_RUN_SPEED;
+				}
+				else if (FlxG.keys.pressed("LEFT") && PlayState.m_currentLevel.IsInLevelBounds(centreX-1, centreY))
+				{
+					velocity.x = -HORIZONTAL_RUN_SPEED;
+				}
+				else
+				{
+					velocity.x = 0;
+				}
+				
+				if (FlxG.keys.pressed("DOWN") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY+1))
+				{
+					velocity.y = VERTICAL_RUN_SPEED;
+				}
+				else if (FlxG.keys.pressed("UP") && PlayState.m_currentLevel.IsInLevelBounds(centreX, centreY-1))
+				{
+					velocity.y = -VERTICAL_RUN_SPEED;
+				}
+				else
+				{
+					velocity.y = 0;
+				}
 			}
 			
 			// Clamp position
@@ -90,30 +98,58 @@ package game
 				y = maxY - (height - width / 4.0);
 			else if (centreY < minY)
 				y = minY - (height - width / 4.0);
-			
-			// Animate
-			if (velocity.x > 0)
+				
+			if (alive)
 			{
-				// Right
-				play("Idle_R");
-			}
-			else if (velocity.x < 0)
-			{
-				// Left
-				play("Idle_L");
-			}
-			else if (velocity.y > 0)
-			{
-				// Down
-				play("Idle_D");
-			}
-			else if (velocity.y < 0)
-			{
-				// Down
-				play("Idle_U");
+				// Animate
+				if (velocity.x > 0)
+				{
+					// Right
+					play("Idle_R");
+					facing = RIGHT;
+				}
+				else if (velocity.x < 0)
+				{
+					// Left
+					play("Idle_L");
+					facing = LEFT;
+				}
+				else if (velocity.y > 0)
+				{
+					// Down
+					play("Idle_D");
+					facing = DOWN;
+				}
+				else if (velocity.y < 0)
+				{
+					// Down
+					play("Idle_U");
+					facing = UP;
+				}
 			}
 			
 			super.update();
+		}
+		
+		override public function kill():void 
+		{
+			alive = false;
+			switch (facing)
+			{
+				case LEFT:
+					play("Dead_L");
+					break;
+				case RIGHT:
+					play("Dead_R");
+					break;
+				case UP:
+					play("Dead_U");
+					break;
+				case DOWN:
+				default:
+					play("Dead_D");
+					break;
+			}
 		}
 		
 		public function getCentreStandingPos():FlxPoint
