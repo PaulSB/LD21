@@ -2,6 +2,7 @@ package game
 {
 	import org.flixel.FlxG;
 	import org.flixel.FlxPoint;
+	import org.flixel.FlxSound;
 	import org.flixel.FlxSprite;
 	
 	/**
@@ -11,6 +12,12 @@ package game
 	public class Enemy extends FlxSprite
 	{
 		[Embed(source = '../../data/textures/enemy.png')] private var imgEnemy:Class;
+		
+		[Embed(source = '../../data/sound/alert1.mp3')] private var sndAlert1:Class;
+		[Embed(source = '../../data/sound/alert2.mp3')] private var sndAlert2:Class;
+		[Embed(source = '../../data/sound/alert3.mp3')] private var sndAlert3:Class;
+		[Embed(source = '../../data/sound/alert4.mp3')] private var sndAlert4:Class;
+		[Embed(source = '../../data/sound/alert5.mp3')] private var sndAlert5:Class;
 		
 		private const HORIZONTAL_WALK_SPEED:int = 18;
 		private const VERTICAL_WALK_SPEED:int = 12;
@@ -29,6 +36,8 @@ package game
 		private var m_hasTarget:Boolean;
 		
 		public var m_animDelayTimer:Number = 0.0;
+		
+		public var m_sfxAlert:FlxSound;
 		
 		public function Enemy(xPos:int, yPos:int) 
 		{
@@ -56,6 +65,19 @@ package game
 			
 			m_hasTarget = false;
 			m_targetPos = new FlxPoint;
+			
+			m_sfxAlert = new FlxSound;
+			var soundRoll:Number = Math.random();
+			if (soundRoll < 0.2)
+				m_sfxAlert.loadEmbedded(sndAlert1);
+			else if (soundRoll < 0.4)
+				m_sfxAlert.loadEmbedded(sndAlert2);
+			else if (soundRoll < 0.6)
+				m_sfxAlert.loadEmbedded(sndAlert3);
+			else if (soundRoll < 0.8)
+				m_sfxAlert.loadEmbedded(sndAlert4);
+			else if (soundRoll < 1.0)
+				m_sfxAlert.loadEmbedded(sndAlert5);
 		}
 		
 		override public function update():void 

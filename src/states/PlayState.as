@@ -25,6 +25,8 @@ package states
 		[Embed(source = '../../data/sound/door.mp3')] private var sndDoor:Class;
 		[Embed(source = '../../data/sound/pickup.mp3')] private var sndPickUp:Class;
 		[Embed(source = '../../data/sound/drop.mp3')] private var sndDrop:Class;
+		[Embed(source = '../../data/sound/hurt1.mp3')] private var sndHurt1:Class;
+		[Embed(source = '../../data/sound/hurt2.mp3')] private var sndHurt2:Class;
 		
 		private var m_levelManager:LevelManager;
 		static public var m_currentLevel:Level;	// Current room reference
@@ -51,6 +53,8 @@ package states
 		private var m_sfxDoor:FlxSound;
 		private var m_sfxPickUp:FlxSound;
 		private var m_sfxDrop:FlxSound;
+		private var m_sfxHurt1:FlxSound;
+		private var m_sfxHurt2:FlxSound;
 		
 		override public function create():void 
 		{
@@ -115,6 +119,10 @@ package states
 			m_sfxPickUp.loadEmbedded(sndPickUp);
 			m_sfxDrop = new FlxSound;
 			m_sfxDrop.loadEmbedded(sndDrop);
+			m_sfxHurt1 = new FlxSound;
+			m_sfxHurt1.loadEmbedded(sndHurt1);
+			m_sfxHurt2 = new FlxSound;
+			m_sfxHurt2.loadEmbedded(sndHurt2);
 		}
 		
 		override public function update():void 
@@ -181,6 +189,13 @@ package states
 						m_failOverlay.visible = true;
 					}
 				}
+				else
+				{
+					if (Math.random() < 0.5)
+						m_sfxHurt1.play();
+					else
+						m_sfxHurt2.play();
+				}
 			}
 			
 			// Enemy-enemy collisions
@@ -204,8 +219,12 @@ package states
 			for each (var enemy:Enemy in m_enemies.members)
 			{
 				// Alertness check
-				if (Math.random() < 0.05)
+				var alertRoll:Number = Math.random();
+				if (alertRoll < 0.05)
 				{
+					if (alertRoll < 0.01)
+						enemy.m_sfxAlert.play();
+					
 					if (activeLoot)
 					{
 						enemy.setTargetPos(activeLoot.x + activeLoot.width/2, activeLoot.y + activeLoot.height - activeLoot.width/2);
