@@ -54,7 +54,7 @@ package states
 			m_enemies = new FlxGroup;
 			
 			m_instructionText = new FlxText(0, 0, FlxG.width);
-			m_instructionText.setFormat(null, 8, 0xffffff, "center");
+			m_instructionText.setFormat(null, 8, 0xffffb0, "center");
 			m_instructionText.visible = false;
 			
 			m_healthBar = new HealthBar;
@@ -161,13 +161,36 @@ package states
 			
 			// Enemy-enemy collisions
 			FlxG.collide(m_enemies, m_enemies);
-			
+				
 			// Enemy targetting
+			var activeLoot:Loot = null;
+			for each (var lootTarget:Loot in m_currentLevel.m_pickUp_Loot)
+			{
+				if (lootTarget.alpha > 0.8)
+				{
+					activeLoot = lootTarget;
+					
+					// Check for exhaustion
+					if (FlxG.overlap(activeLoot, m_enemies))
+					{
+						activeLoot.alpha = 0.75;
+					}
+				}
+			}
 			for each (var enemy:Enemy in m_enemies.members)
 			{
 				// Alertness check
-				//if (Math.random() < 0.1)
-					enemy.setTargetPos(m_player.getCentreStandingPos().x, m_player.getCentreStandingPos().y);
+				if (Math.random() < 0.05)
+				{
+					if (activeLoot)
+					{
+						enemy.setTargetPos(activeLoot.x + activeLoot.width/2, activeLoot.y + activeLoot.height - activeLoot.width/2);
+					}
+					else
+					{
+						enemy.setTargetPos(m_player.getCentreStandingPos().x, m_player.getCentreStandingPos().y);
+					}
+				}
 			}
 			
 			// Item instructions
@@ -260,6 +283,7 @@ package states
 								var lootX:int = m_player.x;
 								var lootY:int = m_player.y + m_player.height;
 								var droppedLoot:Loot = new Loot(lootX, lootY, m_currentLevel.m_roomColour);
+								droppedLoot.alpha = 1;
 								m_currentLevel.m_pickUp_Loot.push(droppedLoot);
 								s_layerInScene.add(droppedLoot);
 								m_player.m_hasLoot = false;
