@@ -33,7 +33,6 @@ package ui
 		public function updateHP(healthRemaining:Number):void
 		{
 			// health scale 0.0 - 1.0
-			//var healthStep:int = 0.1;
 			for (var stepLoop:int = 9; stepLoop >= 0; stepLoop--)
 			{
 				if (healthRemaining < stepLoop * 0.1 + 0.05)

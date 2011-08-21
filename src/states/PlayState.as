@@ -8,6 +8,7 @@ package states
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
+	import ui.FailOverlay;
 	import ui.HealthBar;
 	import world.Level;
 	import world.LevelManager;
@@ -27,14 +28,21 @@ package states
 		private var m_instructionText:FlxText;
 		private var m_instructionTarget:FlxSprite = null;
 		private var m_healthBar:HealthBar;
+		private var m_failOverlay:FailOverlay;
 		
 		public static var s_layerBackground:FlxGroup;
 		public static var s_layerInScene:FlxGroup;
 		public static var s_layerForeground:FlxGroup;
 		public static var s_layerOSD:FlxGroup;
 		
-		public function PlayState() 
+		// A couple of stats to track
+		// TO DO
+		
+		//public function PlayState() 
+		override public function create():void 
 		{
+			super.create();
+			
 			m_levelManager = new LevelManager;
 			m_currentLevel = m_levelManager.getCurrentRoom();
 			
@@ -49,6 +57,8 @@ package states
 			m_instructionText.visible = false;
 			
 			m_healthBar = new HealthBar;
+			m_failOverlay = new FailOverlay;
+			m_failOverlay.visible = false;
 			
 			s_layerBackground = new FlxGroup;
 			s_layerBackground.add(m_currentLevel.m_floor);
@@ -74,6 +84,7 @@ package states
 			s_layerOSD = new FlxGroup;
 			s_layerOSD.add(m_instructionText);
 			s_layerOSD.add(m_healthBar);
+			s_layerOSD.add(m_failOverlay);
 			
 			add(s_layerBackground);
 			add(s_layerInScene);
@@ -125,6 +136,12 @@ package states
 					
 				m_player.hurt(0.05);
 				m_healthBar.updateHP(m_player.health);
+				
+				if (!m_player.alive)
+				{
+					m_failOverlay.visible = true;
+					m_instructionText.visible = false;
+				}
 			}
 			
 			// Enemy-enemy collisions
@@ -137,120 +154,140 @@ package states
 			}
 			
 			// Item instructions
-			if (m_currentLevel.m_door_NE && m_currentLevel.m_neighbour_NE && FlxG.overlap(m_player, m_currentLevel.m_door_NE))
+			if (m_player.alive)
 			{
-				m_instructionText.text = "Press SPACE to use DOOR";
-				m_instructionText.visible = true;
-				m_instructionTarget = m_currentLevel.m_door_NE;
-			}
-			else if (m_currentLevel.m_door_SE && m_currentLevel.m_neighbour_SE && FlxG.overlap(m_player, m_currentLevel.m_door_SE))
-			{
-				m_instructionText.text = "Press SPACE to use DOOR";
-				m_instructionText.visible = true;
-				m_instructionTarget = m_currentLevel.m_door_SE;
-			}
-			else if (m_currentLevel.m_door_SW && m_currentLevel.m_neighbour_SW && FlxG.overlap(m_player, m_currentLevel.m_door_SW))
-			{
-				m_instructionText.text = "Press SPACE to use DOOR";
-				m_instructionText.visible = true;
-				m_instructionTarget = m_currentLevel.m_door_SW;
-			}
-			else if (m_currentLevel.m_door_NW && m_currentLevel.m_neighbour_NW && FlxG.overlap(m_player, m_currentLevel.m_door_NW))
-			{
-				m_instructionText.text = "Press SPACE to use DOOR";
-				m_instructionText.visible = true;
-				m_instructionTarget = m_currentLevel.m_door_NW;
+				if (m_currentLevel.m_door_NE && m_currentLevel.m_neighbour_NE && FlxG.overlap(m_player, m_currentLevel.m_door_NE))
+				{
+					m_instructionText.text = "Press SPACE to use DOOR";
+					m_instructionText.visible = true;
+					m_instructionTarget = m_currentLevel.m_door_NE;
+				}
+				else if (m_currentLevel.m_door_SE && m_currentLevel.m_neighbour_SE && FlxG.overlap(m_player, m_currentLevel.m_door_SE))
+				{
+					m_instructionText.text = "Press SPACE to use DOOR";
+					m_instructionText.visible = true;
+					m_instructionTarget = m_currentLevel.m_door_SE;
+				}
+				else if (m_currentLevel.m_door_SW && m_currentLevel.m_neighbour_SW && FlxG.overlap(m_player, m_currentLevel.m_door_SW))
+				{
+					m_instructionText.text = "Press SPACE to use DOOR";
+					m_instructionText.visible = true;
+					m_instructionTarget = m_currentLevel.m_door_SW;
+				}
+				else if (m_currentLevel.m_door_NW && m_currentLevel.m_neighbour_NW && FlxG.overlap(m_player, m_currentLevel.m_door_NW))
+				{
+					m_instructionText.text = "Press SPACE to use DOOR";
+					m_instructionText.visible = true;
+					m_instructionTarget = m_currentLevel.m_door_NW;
+				}
+				else
+				{
+					m_instructionText.visible = false;
+					m_instructionTarget = null;
+				}
+				
+				// Item actions
+				if (m_instructionText.visible)
+				{
+					if (FlxG.keys.justPressed("SPACE"))
+					{
+						var nextRoom:Level = null;
+						if (m_instructionTarget == m_currentLevel.m_door_NE)
+						{
+							nextRoom = m_currentLevel.m_neighbour_NE;
+							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
+							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
+						}
+						else if (m_instructionTarget == m_currentLevel.m_door_SE)
+						{
+							nextRoom = m_currentLevel.m_neighbour_SE;
+							m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
+							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
+						}
+						else if (m_instructionTarget == m_currentLevel.m_door_SW)
+						{
+							nextRoom = m_currentLevel.m_neighbour_SW;
+							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
+							m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
+						}
+						else if (m_instructionTarget == m_currentLevel.m_door_NW)
+						{
+							nextRoom = m_currentLevel.m_neighbour_NW;
+							m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
+							m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
+						}
+						
+						if (nextRoom)
+						{
+							// Room transition
+							s_layerBackground.replace(m_currentLevel.m_floor, nextRoom.m_floor);
+							if (m_currentLevel.m_door_NE)
+								s_layerBackground.remove(m_currentLevel.m_door_NE, true);
+							if (m_currentLevel.m_door_SE)
+								s_layerForeground.remove(m_currentLevel.m_door_SE, true);
+							if (m_currentLevel.m_door_SW)
+								s_layerForeground.remove(m_currentLevel.m_door_SW, true);
+							if (m_currentLevel.m_door_NW)
+								s_layerBackground.remove(m_currentLevel.m_door_NW, true);
+							
+							m_levelManager.changeCurrentRoom(nextRoom.m_roomIndex);	
+							m_currentLevel = m_levelManager.getCurrentRoom();
+							
+							if (m_currentLevel.m_door_NE)
+								s_layerBackground.add(m_currentLevel.m_door_NE);
+							if (m_currentLevel.m_door_SE)
+								s_layerForeground.add(m_currentLevel.m_door_SE);
+							if (m_currentLevel.m_door_SW)
+								s_layerForeground.add(m_currentLevel.m_door_SW);
+							if (m_currentLevel.m_door_NW)
+								s_layerBackground.add(m_currentLevel.m_door_NW);
+								
+							// Populate
+							for each (var oldEnemy:Enemy in m_enemies.members)
+							{
+								s_layerInScene.remove(oldEnemy, true);
+							}
+							
+							m_enemies = new FlxGroup;
+							for (var enemyLoop:int = 0; enemyLoop < 3; enemyLoop++)		// TO DO: get enemies level should have
+							{
+								var distToPlayerX:int = 0, distToPlayerY:int = 0;
+								var enemyX:int, enemyY:int;
+								while (distToPlayerX < 8 || distToPlayerY < 8)
+								{
+									enemyX = m_currentLevel.m_roomCentreX
+												- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.m_roomWidth - 16));
+									enemyY = m_currentLevel.m_roomCentreY
+												- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.getMaxYForX(enemyX) * 2 - 16));
+												
+									distToPlayerX = (enemyX > m_player.x) ? (enemyX - m_player.x) : (m_player.x - enemyX);
+									distToPlayerY = (enemyY > m_player.y) ? (enemyY - m_player.y) : (m_player.y - enemyY);
+								}
+								m_enemies.add(new Enemy(enemyX, enemyY));
+							}
+
+							for each (var newEnemy:Enemy in m_enemies.members)
+							{
+								s_layerInScene.add(newEnemy);
+							}
+						}
+					}
+				}
 			}
 			else
 			{
-				m_instructionText.visible = false;
-				m_instructionTarget = null;
-			}
-			
-			// Item actions
-			if (m_instructionText.visible)
-			{
-				if (FlxG.keys.justPressed("SPACE"))
+				// Dead, space will proceed from here
+				if (m_failOverlay.visible)
 				{
-					var nextRoom:Level = null;
-					if (m_instructionTarget == m_currentLevel.m_door_NE)
+					if (!m_instructionText.visible)
 					{
-						nextRoom = m_currentLevel.m_neighbour_NE;
-						m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
-						m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
-					}
-					else if (m_instructionTarget == m_currentLevel.m_door_SE)
-					{
-						nextRoom = m_currentLevel.m_neighbour_SE;
-						m_player.x = Level.ROOM_DRAW_X - 2.0 * m_currentLevel.m_tileWidth;
-						m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
-					}
-					else if (m_instructionTarget == m_currentLevel.m_door_SW)
-					{
-						nextRoom = m_currentLevel.m_neighbour_SW;
-						m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
-						m_player.y = Level.ROOM_DRAW_Y + 3.0 * m_currentLevel.m_tileHeight;
-					}
-					else if (m_instructionTarget == m_currentLevel.m_door_NW)
-					{
-						nextRoom = m_currentLevel.m_neighbour_NW;
-						m_player.x = Level.ROOM_DRAW_X + 2.0 * m_currentLevel.m_tileWidth;
-						m_player.y = Level.ROOM_DRAW_Y + 6.0 * m_currentLevel.m_tileHeight;
+						m_instructionText.text = "Press ESCAPE to RESTART";
+						m_instructionText.visible = true;
 					}
 					
-					if (nextRoom)
+					if (FlxG.keys.justPressed("ESCAPE"))
 					{
-						// Room transition
-						s_layerBackground.replace(m_currentLevel.m_floor, nextRoom.m_floor);
-						if (m_currentLevel.m_door_NE)
-							s_layerBackground.remove(m_currentLevel.m_door_NE, true);
-						if (m_currentLevel.m_door_SE)
-							s_layerForeground.remove(m_currentLevel.m_door_SE, true);
-						if (m_currentLevel.m_door_SW)
-							s_layerForeground.remove(m_currentLevel.m_door_SW, true);
-						if (m_currentLevel.m_door_NW)
-							s_layerBackground.remove(m_currentLevel.m_door_NW, true);
-						
-						m_levelManager.changeCurrentRoom(nextRoom.m_roomIndex);	
-						m_currentLevel = m_levelManager.getCurrentRoom();
-						
-						if (m_currentLevel.m_door_NE)
-							s_layerBackground.add(m_currentLevel.m_door_NE);
-						if (m_currentLevel.m_door_SE)
-							s_layerForeground.add(m_currentLevel.m_door_SE);
-						if (m_currentLevel.m_door_SW)
-							s_layerForeground.add(m_currentLevel.m_door_SW);
-						if (m_currentLevel.m_door_NW)
-							s_layerBackground.add(m_currentLevel.m_door_NW);
-							
-						// Populate
-						for each (var oldEnemy:Enemy in m_enemies.members)
-						{
-							s_layerInScene.remove(oldEnemy, true);
-						}
-						
-						m_enemies = new FlxGroup;
-						for (var enemyLoop:int = 0; enemyLoop < 3; enemyLoop++)		// TO DO: get enemies level should have
-						{
-							var distToPlayerX:int = 0, distToPlayerY:int = 0;
-							var enemyX:int, enemyY:int;
-							while (distToPlayerX < 8 || distToPlayerY < 8)
-							{
-								enemyX = m_currentLevel.m_roomCentreX
-											- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.m_roomWidth - 16));
-								enemyY = m_currentLevel.m_roomCentreY
-											- (Math.random() - 0.5) * (Math.max(0, m_currentLevel.getMaxYForX(enemyX) * 2 - 16));
-											
-								distToPlayerX = (enemyX > m_player.x) ? (enemyX - m_player.x) : (m_player.x - enemyX);
-								distToPlayerY = (enemyY > m_player.y) ? (enemyY - m_player.y) : (m_player.y - enemyY);
-							}
-							m_enemies.add(new Enemy(enemyX, enemyY));
-						}
-
-						for each (var newEnemy:Enemy in m_enemies.members)
-						{
-							s_layerInScene.add(newEnemy);
-						}
+						FlxG.switchState( new PlayState() );
 					}
 				}
 			}

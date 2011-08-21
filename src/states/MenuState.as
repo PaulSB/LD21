@@ -21,14 +21,14 @@ package states
 			this.add(tTxt);
 			
 			// Instruction text
-			tTxt = new FlxText(0, FlxG.height -12, FlxG.width, "Press SPACE to begin");
+			tTxt = new FlxText(0, FlxG.height -12, FlxG.width, "Press ESCAPE to BEGIN");
 			tTxt.setFormat(null, 8, 0xffffffff, "center");
 			this.add(tTxt);
 		}
 		
 		override public function update():void
 		{
-			if (FlxG.keys.justPressed("SPACE"))
+			if (FlxG.keys.justPressed("ESCAPE"))
 			{
 				FlxG.fade(0xff000000, 0.5, onFade);
 			}
