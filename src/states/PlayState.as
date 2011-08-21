@@ -118,7 +118,7 @@ package states
 					}
 				}
 					
-				m_player.hurt(0.1);
+				m_player.hurt(0.0);// (0.1);	// TEMP invincible for testing
 			}
 			
 			// Enemy-enemy collisions
