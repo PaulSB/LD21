@@ -100,6 +100,11 @@ package world
 				m_door_NE.loadGraphic(imgDoor, true, false, 18, 32);
 				m_door_NE.color = roomColour;
 				m_door_NE.y -= m_door_NE.height;
+				// Adjust collision rect:
+				m_door_NE.offset.y = (m_door_NE.height - m_door_NE.width);
+				m_door_NE.height -= m_door_NE.offset.y;
+				m_door_NE.y += m_door_NE.offset.y;
+				
 				m_door_NE.addAnimation("closed", [E_DIRECTION_NE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
 				m_door_NE.play("closed");
 			}
@@ -111,6 +116,11 @@ package world
 				m_door_SE.loadGraphic(imgDoor, true, false, 18, 32);
 				m_door_SE.color = roomColour;
 				m_door_SE.y -= m_door_SE.height;
+				// Adjust collision rect:
+				m_door_SE.offset.y = (m_door_SE.height - m_door_SE.width);
+				m_door_SE.height -= m_door_SE.offset.y;
+				m_door_SE.y += m_door_SE.offset.y;
+				
 				m_door_SE.addAnimation("closed", [E_DIRECTION_SE * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
 				m_door_SE.play("closed");
 			}
@@ -122,6 +132,11 @@ package world
 				m_door_SW.loadGraphic(imgDoor, true, false, 18, 32);
 				m_door_SW.color = roomColour;
 				m_door_SW.y -= m_door_SW.height;
+				// Adjust collision rect:
+				m_door_SW.offset.y = (m_door_SW.height - m_door_SW.width);
+				m_door_SW.height -= m_door_SW.offset.y;
+				m_door_SW.y += m_door_SW.offset.y;
+				
 				m_door_SW.addAnimation("closed", [E_DIRECTION_SW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
 				m_door_SW.play("closed");
 			}
@@ -133,6 +148,11 @@ package world
 				m_door_NW.loadGraphic(imgDoor, true, false, 18, 32);
 				m_door_NW.color = roomColour;
 				m_door_NW.y -= m_door_NW.height;
+				// Adjust collision rect:
+				m_door_NW.offset.y = (m_door_NW.height - m_door_NW.width);
+				m_door_NW.height -= m_door_NW.offset.y;
+				m_door_NW.y += m_door_NW.offset.y;
+				
 				m_door_NW.addAnimation("closed", [E_DIRECTION_NW * NUM_DOOR_FRAMES_PER_DIRECTION +0]);
 				m_door_NW.play("closed");
 			}
