@@ -1,5 +1,6 @@
 package game 
 {
+	import org.flixel.FlxG;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxSprite;
 	
@@ -14,7 +15,7 @@ package game
 		private const HORIZONTAL_WALK_SPEED:int = 18;
 		private const VERTICAL_WALK_SPEED:int = 12;
 		
-		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 1;
+		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 2;
 		// Pseudo-enum
 		private const E_DIRECTION_LEFT:int = 0;
 		private const E_DIRECTION_RIGHT:int = 1;
@@ -26,6 +27,8 @@ package game
 		
 		private var m_targetPos:FlxPoint;
 		private var m_hasTarget:Boolean;
+		
+		public var m_animDelayTimer:Number = 0.0;
 		
 		public function Enemy(xPos:int, yPos:int) 
 		{
@@ -39,6 +42,11 @@ package game
 			addAnimation("Idle_R", [E_DIRECTION_RIGHT * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
 			addAnimation("Idle_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 0]);
+			
+			addAnimation("Attack_L", [E_DIRECTION_LEFT * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Attack_R", [E_DIRECTION_RIGHT * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Attack_U", [E_DIRECTION_UP * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
+			addAnimation("Attack_D", [E_DIRECTION_DOWN * NUM_ANIM_FRAMES_PER_DIRECTION + 1]);
 			
 			// Adjust collision rect
 			offset.x = 3;
@@ -68,26 +76,35 @@ package game
 			}
 			
 			// Animate
-			if (velocity.x > 0)
+			if (m_animDelayTimer <= 0)
 			{
-				// Right
-				play("Idle_R");
+				if (velocity.x > 0)
+				{
+					// Right
+					play("Idle_R");
+					facing = RIGHT;
+				}
+				else if (velocity.x < 0)
+				{
+					// Left
+					play("Idle_L");
+					facing = LEFT;
+				}
+				else if (velocity.y > 0)
+				{
+					// Down
+					play("Idle_D");
+					facing = DOWN;
+				}
+				else if (velocity.y < 0)
+				{
+					// Down
+					play("Idle_U");
+					facing = UP;
+				}
 			}
-			else if (velocity.x < 0)
-			{
-				// Left
-				play("Idle_L");
-			}
-			else if (velocity.y > 0)
-			{
-				// Down
-				play("Idle_D");
-			}
-			else if (velocity.y < 0)
-			{
-				// Down
-				play("Idle_U");
-			}
+			else
+				m_animDelayTimer -= FlxG.elapsed;
 			
 			super.update();
 		}

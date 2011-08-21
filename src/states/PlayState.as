@@ -106,7 +106,7 @@ package states
 				m_gameTime += FlxG.elapsed;
 			
 			// Player-enemy collisions
-			if (FlxG.collide(m_enemies, m_player))
+			if (FlxG.collide(m_enemies, m_player, enemyAttackAnim))
 			{
 				var maxX:Number = m_currentLevel.getMaxXForY(m_player.getCentreStandingPos().y);
 				var maxY:Number = m_currentLevel.getMaxYForX(m_player.getCentreStandingPos().x);
@@ -420,6 +420,26 @@ package states
 			s_layerInScene.sort("y", ASCENDING);
 			
 			super.update();
+		}
+		
+		private function enemyAttackAnim(enemy:Enemy, player:Player):void
+		{
+			switch (enemy.facing)
+			{
+				case FlxObject.RIGHT:
+					enemy.play("Attack_R");
+					break;
+				case FlxObject.LEFT:
+					enemy.play("Attack_L");
+					break;
+				case FlxObject.UP:
+					enemy.play("Attack_U");
+					break;
+				case FlxObject.DOWN:
+					enemy.play("Attack_D");
+					break;
+			}
+			enemy.m_animDelayTimer = 0.1;
 		}
 	}
 }
