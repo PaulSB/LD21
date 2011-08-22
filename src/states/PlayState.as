@@ -59,7 +59,7 @@ package states
 		private var m_sfxDrop:FlxSound;
 		private var m_sfxHurt1:FlxSound;
 		private var m_sfxHurt2:FlxSound;
-		private var m_music:FlxSound;
+		//private var m_music:FlxSound;
 		
 		private static var s_myMute:Boolean = false;	// <- FlxG.mute giving me problems...
 		
@@ -139,11 +139,9 @@ package states
 			m_sfxHurt2 = new FlxSound;
 			m_sfxHurt2.loadEmbedded(sndHurt2);
 			
-			m_music = new FlxSound;
-			m_music.loadEmbedded(sndMusic, true);
-			m_music.play();
+			FlxG.playMusic(sndMusic);
 			if (s_myMute)
-				m_music.pause();
+				FlxG.music.pause();
 		}
 		
 		override public function update():void 
@@ -157,9 +155,9 @@ package states
 				s_myMute = !s_myMute;
 				m_muteText.text = s_myMute ? "[M] Unmute" : "[M] Mute";
 				if (s_myMute)
-					m_music.pause();
+					FlxG.music.pause();
 				else
-					m_music.resume();
+					FlxG.music.resume();
 			}
 				
 			// Obstacle collisions
@@ -488,7 +486,7 @@ package states
 								m_winOverlay.visible = true;
 								m_instructionText.visible = false;
 								
-								m_music.stop();	// The silence is deafening
+								FlxG.music.stop();	// The silence is deafening
 								m_backgroundGFX.visible = false;
 							}
 						}

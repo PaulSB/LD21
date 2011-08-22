@@ -1,6 +1,7 @@
 package states 
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
 	
@@ -10,22 +11,29 @@ package states
 	 */
 	public class MenuState extends FlxState
 	{
+		[Embed(source = '../../data/textures/enemy_zoom.png')] private var imgEnemyZoom:Class;
+		
 		private static var m_escapesThisSession:int = -1;
 		
 		override public function create():void 
 		{
 			super.create();
 			
+			// Graphic
+			var graphic:FlxSprite = new FlxSprite;
+			graphic.loadGraphic(imgEnemyZoom);
+			add(graphic);
+			
 			// Title text
 			var tTxt:FlxText;
-			tTxt = new FlxText(0, FlxG.height / 2 -12, FlxG.width, "ESCAPE");
-			tTxt.setFormat(null, 16, 0xffffffff, "center");
-			this.add(tTxt);
+			tTxt = new FlxText(0, FlxG.height / 2 -16, FlxG.width, "ONE MORE DOOR");
+			tTxt.setFormat(null, 16, 0xffffffff, "center", 0x400000);
+			add(tTxt);
 			
 			// Instruction text
 			tTxt = new FlxText(0, FlxG.height -12, FlxG.width, "Press ESCAPE to BEGIN");
 			tTxt.setFormat(null, 8, 0xffffffb0, "center");
-			this.add(tTxt);
+			add(tTxt);
 			
 			// Stat text
 			m_escapesThisSession++;
@@ -36,7 +44,7 @@ package states
 				else
 					tTxt = new FlxText(0, 0, FlxG.width, m_escapesThisSession + " \"escapes\" this session");
 				tTxt.setFormat(null, 8, 0xffff8080, "center");
-				this.add(tTxt);
+				add(tTxt);
 			}
 		}
 		
