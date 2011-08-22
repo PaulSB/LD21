@@ -16,6 +16,8 @@ package game
 		private const HORIZONTAL_RUN_SPEED:int = 60;
 		private const VERTICAL_RUN_SPEED:int = 40;
 		
+		private const HURT_DELAY:Number = 0.1;
+		
 		private const NUM_ANIM_FRAMES_PER_DIRECTION:int = 2;
 		// Pseudo-enum
 		private const E_DIRECTION_LEFT:int = 0;
@@ -27,6 +29,7 @@ package game
 		public var m_spriteHeight:int;
 		
 		public var m_hasLoot:Boolean = false;
+		private var m_hurtDelayTimer:Number = 0;
 		
 		public function Player(xPos:int, yPos:int) 
 		{
@@ -51,10 +54,15 @@ package game
 			offset.y = (height - height / 4);
 			width -= offset.x * 2;
 			height -= offset.y;
+			
+			health = 0.95;	// health weirdness fix
 		}
 		
 		override public function update():void 
 		{
+			if (m_hurtDelayTimer > 0)
+				m_hurtDelayTimer -= FlxG.elapsed;
+			
 			var centreX:Number = getCentreStandingPos().x;
 			var centreY:Number = getCentreStandingPos().y;
 			
@@ -131,6 +139,15 @@ package game
 			}
 			
 			super.update();
+		}
+		
+		override public function hurt(Damage:Number):void 
+		{
+			if (m_hurtDelayTimer <= 0)
+			{
+				super.hurt(Damage);
+				m_hurtDelayTimer = HURT_DELAY;
+			}
 		}
 		
 		override public function kill():void 

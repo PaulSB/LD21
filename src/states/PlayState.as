@@ -207,7 +207,7 @@ package states
 					}
 				}
 					
-				m_player.hurt(0.05);
+				m_player.hurt(0.1);
 				m_healthBar.updateHP(m_player.health);
 				
 				if (!m_player.alive)

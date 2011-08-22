@@ -26,7 +26,7 @@ package states
 			
 			// Title text
 			var tTxt:FlxText;
-			tTxt = new FlxText(0, FlxG.height / 2 -16, FlxG.width, "ONE MORE DOOR");
+			tTxt = new FlxText(0, FlxG.height / 2 -24, FlxG.width, "SOUTHWARD LIES ESCAPE");
 			tTxt.setFormat(null, 16, 0xffffffff, "center", 0x400000);
 			add(tTxt);
 			
